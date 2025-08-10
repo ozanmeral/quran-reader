@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Kur’an (Yaşar Nuri) – Okuyucu</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <style>
+    :root { --bg:#0b0f19; --fg:#e5e7eb; --muted:#94a3b8; --card:#111827; --accent:#2563eb; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--fg); }
+    header { position:sticky; top:0; z-index:5; background:rgba(11,15,25,.9); backdrop-filter:saturate(140%) blur(6px); border-bottom:1px solid #1f2937; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 12px 16px; }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    select, input[type="text"], button {
+      background:#0f172a; color:var(--fg); border:1px solid #243042; border-radius:10px; padding:10px 12px; font-size:16px;
+    }
+    button { cursor:pointer }
+    .card { background:var(--card); border:1px solid #1f2937; border-radius:16px; padding:16px; }
+    .surah-title { font-size:20px; font-weight:700; margin:8px 0 12px; }
+    .verse { padding:10px 12px; border-left:3px solid #1f2937; margin:6px 0; border-radius:6px; line-height:1.6; }
+    .verse b { color:var(--muted) }
+    .muted { color:var(--muted) }
+    .flex { display:flex; gap:8px; align-items:center; }
+    .grow { flex:1 }
+    .pill { background:#0f172a; padding:6px 10px; border-radius:999px; border:1px solid #1f2937; }
+    .link { color:var(--accent); text-decoration:none }
+    .hint { font-size:13px; color:var(--muted); }
+    .footer { text-align:center; color:var(--muted); font-size:12px; padding:24px 0 40px; }
+    .hidden { display:none }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap toolbar">
+    <strong>Kur’an Okuyucu</strong>
+    <span class="pill">Yaşar Nuri Öztürk</span>
+    <div class="grow"></div>
+    <button id="decrease">A−</button>
+    <button id="increase">A+</button>
+    <button id="toggle-contrast">Kontrast</button>
+    <button id="installBtn" class="hidden">Yükle</button>
+  </div>
+  <div class="wrap toolbar" style="padding-top:0">
+    <select id="surahSelect" title="Sure seç">
+      <option>Yükleniyor…</option>
+    </select>
+    <input id="search" class="grow" type="text" placeholder="Ayet içinde ara (TR)…">
+    <button id="clearSearch">Temizle</button>
+  </div>
+  <div class="wrap hint">
+    JSON kaynağı: <code id="srcLabel">/data/quranix_yasarnuri_simple.json</code>
+    <details>
+      <summary>Farklı JSON adresi kullan</summary>
+      <div class="flex">
+        <input id="jsonUrl" class="grow" type="text" placeholder="https://.../quran.json">
+        <button id="loadUrl">Yükle</button>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main class="wrap" style="padding-top:16px">
+  <div id="meta" class="muted"></div>
+  <div id="content" class="card">
+    <div class="muted">Veri yükleniyor…</div>
+  </div>
+</main>
+
+<div class="footer wrap">
+  Çevrimdışı çalışır. PWA olarak kurulabilir. JSON statikse siteye koy.
+</div>
+
+<script>
+  // State
+  let DATA = null;
+  let fontSize = parseInt(localStorage.getItem("fs") || "18", 10);
+  let highContrast = localStorage.getItem("hc") === "1";
+  let deferredPrompt = null;
+
+  // UI refs
+  const content = document.getElementById('content');
+  const surahSelect = document.getElementById('surahSelect');
+  const searchInput = document.getElementById('search');
+  const clearBtn = document.getElementById('clearSearch');
+  const srcLabel = document.getElementById('srcLabel');
+  const jsonUrlInput = document.getElementById('jsonUrl');
+  const loadUrlBtn = document.getElementById('loadUrl');
+  const meta = document.getElementById('meta');
+  const increase = document.getElementById('increase');
+  const decrease = document.getElementById('decrease');
+  const toggleContrast = document.getElementById('toggle-contrast');
+  const installBtn = document.getElementById('installBtn');
+
+  // Font size / contrast
+  function applyFont() { document.documentElement.style.fontSize = fontSize + "px"; localStorage.setItem("fs", String(fontSize)); }
+  function applyContrast() {
+    if (highContrast) {
+      document.documentElement.style.setProperty('--bg', '#000');
+      document.documentElement.style.setProperty('--fg', '#fff');
+      document.documentElement.style.setProperty('--muted', '#ccc');
+      document.documentElement.style.setProperty('--card', '#000');
+    } else {
+      document.documentElement.style.removeProperty('--bg');
+      document.documentElement.style.removeProperty('--fg');
+      document.documentElement.style.removeProperty('--muted');
+      document.documentElement.style.removeProperty('--card');
+    }
+    localStorage.setItem('hc', highContrast ? '1' : '0');
+  }
+  increase.onclick = () => { fontSize = Math.min(28, fontSize + 1); applyFont(); };
+  decrease.onclick = () => { fontSize = Math.max(14, fontSize - 1); applyFont(); };
+  toggleContrast.onclick = () => { highContrast = !highContrast; applyContrast(); };
+  applyFont(); applyContrast();
+
+  // Render
+  function renderSurahList() {
+    surahSelect.innerHTML = "";
+    DATA.surahs.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.number;
+      opt.textContent = `${s.number}. ${s.name_tr}`;
+      surahSelect.appendChild(opt);
+    });
+  }
+
+  function renderSurah(num, q="") {
+    const s = DATA.surahs.find(x => x.number === Number(num));
+    if (!s) return;
+    let html = `<div class="surah-title">${s.number}. ${s.name_tr}</div>`;
+    const needle = q.trim().toLowerCase();
+    s.verses.forEach(v => {
+      let text = v.text_tr;
+      if (needle) {
+        const re = new RegExp("(" + needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", "gi");
+        text = text.replace(re, '<mark>$1</mark>');
+      }
+      html += `<div class="verse"><b>${s.number}:${v.number}</b> ${text}</div>`;
+    });
+    content.innerHTML = html;
+  }
+
+  function renderMeta() {
+    const { source, locale, translator, retrieved_at } = DATA.metadata || {};
+    meta.textContent = `Kaynak: ${source || '—'} | Dil: ${locale || 'tr'} | Çevirmen: ${translator || '—'} | Tarih: ${retrieved_at || '—'}`;
+  }
+
+  // Load JSON
+  async function loadJSON(url) {
+    srcLabel.textContent = url;
+    const res = await fetch(url, { cache: 'reload' });
+    if (!res.ok) throw new Error("JSON yüklenemedi: " + res.status);
+    DATA = await res.json();
+    if (!DATA?.surahs?.length) throw new Error("Beklenen format değil (surahs yok).");
+    renderMeta();
+    renderSurahList();
+    renderSurah(DATA.surahs[0].number, searchInput.value);
+  }
+
+  // Events
+  surahSelect.addEventListener('change', () => renderSurah(surahSelect.value, searchInput.value));
+  searchInput.addEventListener('input', () => renderSurah(surahSelect.value, searchInput.value));
+  clearBtn.addEventListener('click', () => { searchInput.value = ""; renderSurah(surahSelect.value, ""); });
+
+  loadUrlBtn.addEventListener('click', async () => {
+    const url = jsonUrlInput.value.trim();
+    if (!url) return;
+    try { await loadJSON(url); } catch (e) { alert(e.message); }
+  });
+
+  // Initial load
+  loadJSON('./data/quranix_yasarnuri_simple.json')
+    .catch(err => { content.innerHTML = `<div class="muted">Hata: ${err.message}</div>`; });
+
+  // PWA install prompt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.remove('hidden');
+  });
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    installBtn.classList.add('hidden');
+    deferredPrompt = null;
+  });
+
+  // Register SW
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(console.error);
+    });
+  }
+</script>
+</body>
+</html>
