@@ -8,7 +8,7 @@
   "surahs": [
     {
       "number": 1,
-      "name_tr": "1. Fatiha (Açılış)",
+      "name_tr": "Fatiha (Açılış)",
       "verses": [
         {
           "number": 1,
@@ -42,7 +42,7 @@
     },
     {
       "number": 2,
-      "name_tr": "2. Bakara (İnek)",
+      "name_tr": "Bakara (İnek)",
       "verses": [
         {
           "number": 1,
@@ -1192,7 +1192,7 @@
     },
     {
       "number": 3,
-      "name_tr": "3. Al-i İmran (İmran Ailesi)",
+      "name_tr": "Al-i İmran (İmran Ailesi)",
       "verses": [
         {
           "number": 1,
@@ -1998,7 +1998,7 @@
     },
     {
       "number": 4,
-      "name_tr": "4. Nisa (Kadın)",
+      "name_tr": "Nisa (Kadın)",
       "verses": [
         {
           "number": 1,
@@ -2708,7 +2708,7 @@
     },
     {
       "number": 5,
-      "name_tr": "5. Maide (Ziyafet)",
+      "name_tr": "Maide (Ziyafet)",
       "verses": [
         {
           "number": 1,
@@ -3194,7 +3194,7 @@
     },
     {
       "number": 6,
-      "name_tr": "6. En'am (Çiftlik Hayvanları)",
+      "name_tr": "En'am (Çiftlik Hayvanları)",
       "verses": [
         {
           "number": 1,
@@ -3860,7 +3860,7 @@
     },
     {
       "number": 7,
-      "name_tr": "7. Araf (Orta Yer)",
+      "name_tr": "Araf (Orta Yer)",
       "verses": [
         {
           "number": 1,
@@ -4690,7 +4690,7 @@
     },
     {
       "number": 8,
-      "name_tr": "8. Enfal (Ganimetler)",
+      "name_tr": "Enfal (Ganimetler)",
       "verses": [
         {
           "number": 1,
@@ -4996,7 +4996,7 @@
     },
     {
       "number": 9,
-      "name_tr": "9. Bara'e (Ultimatom)",
+      "name_tr": "Bara'e (Ultimatom)",
       "verses": [
         {
           "number": 1,
@@ -5510,7 +5510,7 @@
     },
     {
       "number": 10,
-      "name_tr": "10. Yunus (Yunus)",
+      "name_tr": "Yunus (Yunus)",
       "verses": [
         {
           "number": 1,
@@ -5952,7 +5952,7 @@
     },
     {
       "number": 11,
-      "name_tr": "11. Hud (Hud)",
+      "name_tr": "Hud (Hud)",
       "verses": [
         {
           "number": 1,
@@ -6450,7 +6450,7 @@
     },
     {
       "number": 12,
-      "name_tr": "12. Yusuf (Yusuf)",
+      "name_tr": "Yusuf (Yusuf)",
       "verses": [
         {
           "number": 1,
@@ -6900,7 +6900,7 @@
     },
     {
       "number": 13,
-      "name_tr": "13. Ra'd (Gök Gürlemesi)",
+      "name_tr": "Ra'd (Gök Gürlemesi)",
       "verses": [
         {
           "number": 1,
@@ -7078,7 +7078,7 @@
     },
     {
       "number": 14,
-      "name_tr": "14. İbrahim (İbrahim)",
+      "name_tr": "İbrahim (İbrahim)",
       "verses": [
         {
           "number": 1,
@@ -7292,7 +7292,7 @@
     },
     {
       "number": 15,
-      "name_tr": "15. Hicr (Hicr Vadisi)",
+      "name_tr": "Hicr (Hicr Vadisi)",
       "verses": [
         {
           "number": 1,
@@ -7694,7 +7694,7 @@
     },
     {
       "number": 16,
-      "name_tr": "16. Nahl (Arı)",
+      "name_tr": "Nahl (Arı)",
       "verses": [
         {
           "number": 1,
@@ -8212,7 +8212,7 @@
     },
     {
       "number": 17,
-      "name_tr": "17. Beni İsrail (İsrailoğulları)",
+      "name_tr": "Beni İsrail (İsrailoğulları)",
       "verses": [
         {
           "number": 1,
@@ -8662,7 +8662,7 @@
     },
     {
       "number": 18,
-      "name_tr": "18. Kehf (Mağara)",
+      "name_tr": "Kehf (Mağara)",
       "verses": [
         {
           "number": 1,
@@ -9108,7 +9108,7 @@
     },
     {
       "number": 19,
-      "name_tr": "19. Meryem (Meryem)",
+      "name_tr": "Meryem (Meryem)",
       "verses": [
         {
           "number": 1,
@@ -9506,7 +9506,7 @@
     },
     {
       "number": 20,
-      "name_tr": "20. Ta Ha (TT.H.)",
+      "name_tr": "Ta Ha (TT.H.)",
       "verses": [
         {
           "number": 1,
@@ -10052,7 +10052,7 @@
     },
     {
       "number": 21,
-      "name_tr": "21. Enbiya (Peygamberler)",
+      "name_tr": "Enbiya (Peygamberler)",
       "verses": [
         {
           "number": 1,
@@ -10506,7 +10506,7 @@
     },
     {
       "number": 22,
-      "name_tr": "22. Hac (Hac)",
+      "name_tr": "Hac (Hac)",
       "verses": [
         {
           "number": 1,
@@ -10824,7 +10824,7 @@
     },
     {
       "number": 23,
-      "name_tr": "23. Muminun (İnananlar)",
+      "name_tr": "Muminun (İnananlar)",
       "verses": [
         {
           "number": 1,
@@ -11302,7 +11302,7 @@
     },
     {
       "number": 24,
-      "name_tr": "24. Nur (Işık)",
+      "name_tr": "Nur (Işık)",
       "verses": [
         {
           "number": 1,
@@ -11564,7 +11564,7 @@
     },
     {
       "number": 25,
-      "name_tr": "25. Furkan (Yasalar kitabı)",
+      "name_tr": "Furkan (Yasalar kitabı)",
       "verses": [
         {
           "number": 1,
@@ -11878,7 +11878,7 @@
     },
     {
       "number": 26,
-      "name_tr": "26. Şuara (Şairler)",
+      "name_tr": "Şuara (Şairler)",
       "verses": [
         {
           "number": 1,
@@ -12792,7 +12792,7 @@
     },
     {
       "number": 27,
-      "name_tr": "27. Neml (Karınca)",
+      "name_tr": "Neml (Karınca)",
       "verses": [
         {
           "number": 1,
@@ -13170,7 +13170,7 @@
     },
     {
       "number": 28,
-      "name_tr": "28. Kasas (Tarih)",
+      "name_tr": "Kasas (Tarih)",
       "verses": [
         {
           "number": 1,
@@ -13528,7 +13528,7 @@
     },
     {
       "number": 29,
-      "name_tr": "29. Ankebut (Dişi Örümcek)",
+      "name_tr": "Ankebut (Dişi Örümcek)",
       "verses": [
         {
           "number": 1,
@@ -13810,7 +13810,7 @@
     },
     {
       "number": 30,
-      "name_tr": "30. Rum (Romalılar)",
+      "name_tr": "Rum (Romalılar)",
       "verses": [
         {
           "number": 1,
@@ -14056,7 +14056,7 @@
     },
     {
       "number": 31,
-      "name_tr": "31. Lokman (Lokman)",
+      "name_tr": "Lokman (Lokman)",
       "verses": [
         {
           "number": 1,
@@ -14198,7 +14198,7 @@
     },
     {
       "number": 32,
-      "name_tr": "32. Secde (Secde)",
+      "name_tr": "Secde (Secde)",
       "verses": [
         {
           "number": 1,
@@ -14324,7 +14324,7 @@
     },
     {
       "number": 33,
-      "name_tr": "33. Ahzab (Partiler)",
+      "name_tr": "Ahzab (Partiler)",
       "verses": [
         {
           "number": 1,
@@ -14622,7 +14622,7 @@
     },
     {
       "number": 34,
-      "name_tr": "34. Sebe (Sebe)",
+      "name_tr": "Sebe (Sebe)",
       "verses": [
         {
           "number": 1,
@@ -14844,7 +14844,7 @@
     },
     {
       "number": 35,
-      "name_tr": "35. Fatır (Yaratan)",
+      "name_tr": "Fatır (Yaratan)",
       "verses": [
         {
           "number": 1,
@@ -15030,7 +15030,7 @@
     },
     {
       "number": 36,
-      "name_tr": "36. Ya Sin (Y.S.)",
+      "name_tr": "Ya Sin (Y.S.)",
       "verses": [
         {
           "number": 1,
@@ -15368,7 +15368,7 @@
     },
     {
       "number": 37,
-      "name_tr": "37. Saffat (Dizenler)",
+      "name_tr": "Saffat (Dizenler)",
       "verses": [
         {
           "number": 1,
@@ -16102,7 +16102,7 @@
     },
     {
       "number": 38,
-      "name_tr": "38. Sad (SS)",
+      "name_tr": "Sad (SS)",
       "verses": [
         {
           "number": 1,
@@ -16460,7 +16460,7 @@
     },
     {
       "number": 39,
-      "name_tr": "39. Zümer (Yığınlar)",
+      "name_tr": "Zümer (Yığınlar)",
       "verses": [
         {
           "number": 1,
@@ -16766,7 +16766,7 @@
     },
     {
       "number": 40,
-      "name_tr": "40. Ğafir (Bağışlayan)",
+      "name_tr": "Ğafir (Bağışlayan)",
       "verses": [
         {
           "number": 1,
@@ -17112,7 +17112,7 @@
     },
     {
       "number": 41,
-      "name_tr": "41. Fussilet (Açıklanmış)",
+      "name_tr": "Fussilet (Açıklanmış)",
       "verses": [
         {
           "number": 1,
@@ -17334,7 +17334,7 @@
     },
     {
       "number": 42,
-      "name_tr": "42. Şura (Danışma)",
+      "name_tr": "Şura (Danışma)",
       "verses": [
         {
           "number": 1,
@@ -17552,7 +17552,7 @@
     },
     {
       "number": 43,
-      "name_tr": "43. Zuhruf (Gösteriş)",
+      "name_tr": "Zuhruf (Gösteriş)",
       "verses": [
         {
           "number": 1,
@@ -17914,7 +17914,7 @@
     },
     {
       "number": 44,
-      "name_tr": "44. Duhan (Duman)",
+      "name_tr": "Duhan (Duman)",
       "verses": [
         {
           "number": 1,
@@ -18156,7 +18156,7 @@
     },
     {
       "number": 45,
-      "name_tr": "45. Casiye (Diz Çöküş)",
+      "name_tr": "Casiye (Diz Çöküş)",
       "verses": [
         {
           "number": 1,
@@ -18310,7 +18310,7 @@
     },
     {
       "number": 46,
-      "name_tr": "46. Ahkaf (Kum Tepecikleri)",
+      "name_tr": "Ahkaf (Kum Tepecikleri)",
       "verses": [
         {
           "number": 1,
@@ -18456,7 +18456,7 @@
     },
     {
       "number": 47,
-      "name_tr": "47. Muhammed (Muhammed)",
+      "name_tr": "Muhammed (Muhammed)",
       "verses": [
         {
           "number": 1,
@@ -18614,7 +18614,7 @@
     },
     {
       "number": 48,
-      "name_tr": "48. Fetih (Zafer)",
+      "name_tr": "Fetih (Zafer)",
       "verses": [
         {
           "number": 1,
@@ -18736,7 +18736,7 @@
     },
     {
       "number": 49,
-      "name_tr": "49. Hucurat (Odalar)",
+      "name_tr": "Hucurat (Odalar)",
       "verses": [
         {
           "number": 1,
@@ -18814,7 +18814,7 @@
     },
     {
       "number": 50,
-      "name_tr": "50. Qaf (Q)",
+      "name_tr": "Qaf (Q)",
       "verses": [
         {
           "number": 1,
@@ -19000,7 +19000,7 @@
     },
     {
       "number": 51,
-      "name_tr": "51. Zariyat (Savuranlar)",
+      "name_tr": "Zariyat (Savuranlar)",
       "verses": [
         {
           "number": 1,
@@ -19246,7 +19246,7 @@
     },
     {
       "number": 52,
-      "name_tr": "52. Tur (Sina Dağı)",
+      "name_tr": "Tur (Sina Dağı)",
       "verses": [
         {
           "number": 1,
@@ -19448,7 +19448,7 @@
     },
     {
       "number": 53,
-      "name_tr": "53. Necm (Yıldızlar)",
+      "name_tr": "Necm (Yıldızlar)",
       "verses": [
         {
           "number": 1,
@@ -19702,7 +19702,7 @@
     },
     {
       "number": 54,
-      "name_tr": "54. Kamer (Ay)",
+      "name_tr": "Kamer (Ay)",
       "verses": [
         {
           "number": 1,
@@ -19928,7 +19928,7 @@
     },
     {
       "number": 55,
-      "name_tr": "55. Rahman (Rahman)",
+      "name_tr": "Rahman (Rahman)",
       "verses": [
         {
           "number": 1,
@@ -20246,7 +20246,7 @@
     },
     {
       "number": 56,
-      "name_tr": "56. Vakıa (Kaçınılmaz Olay)",
+      "name_tr": "Vakıa (Kaçınılmaz Olay)",
       "verses": [
         {
           "number": 1,
@@ -20636,7 +20636,7 @@
     },
     {
       "number": 57,
-      "name_tr": "57. Hadid (Demir)",
+      "name_tr": "Hadid (Demir)",
       "verses": [
         {
           "number": 1,
@@ -20758,7 +20758,7 @@
     },
     {
       "number": 58,
-      "name_tr": "58. Mücadele (Tartışma)",
+      "name_tr": "Mücadele (Tartışma)",
       "verses": [
         {
           "number": 1,
@@ -20852,7 +20852,7 @@
     },
     {
       "number": 59,
-      "name_tr": "59. Haşr (Sürgün)",
+      "name_tr": "Haşr (Sürgün)",
       "verses": [
         {
           "number": 1,
@@ -20954,7 +20954,7 @@
     },
     {
       "number": 60,
-      "name_tr": "60. Mumtahine (Sorgulanan)",
+      "name_tr": "Mumtahine (Sorgulanan)",
       "verses": [
         {
           "number": 1,
@@ -21012,7 +21012,7 @@
     },
     {
       "number": 61,
-      "name_tr": "61. Saff (Düzenli Birlik)",
+      "name_tr": "Saff (Düzenli Birlik)",
       "verses": [
         {
           "number": 1,
@@ -21074,7 +21074,7 @@
     },
     {
       "number": 62,
-      "name_tr": "62. Cuma (Cuma)",
+      "name_tr": "Cuma (Cuma)",
       "verses": [
         {
           "number": 1,
@@ -21124,7 +21124,7 @@
     },
     {
       "number": 63,
-      "name_tr": "63. Munafikun (İkiyüzlüler)",
+      "name_tr": "Munafikun (İkiyüzlüler)",
       "verses": [
         {
           "number": 1,
@@ -21174,7 +21174,7 @@
     },
     {
       "number": 64,
-      "name_tr": "64. Teğabun (Aldanma)",
+      "name_tr": "Teğabun (Aldanma)",
       "verses": [
         {
           "number": 1,
@@ -21252,7 +21252,7 @@
     },
     {
       "number": 65,
-      "name_tr": "65. Talak (Boşanma)",
+      "name_tr": "Talak (Boşanma)",
       "verses": [
         {
           "number": 1,
@@ -21306,7 +21306,7 @@
     },
     {
       "number": 66,
-      "name_tr": "66. Tahrim (Yasaklama)",
+      "name_tr": "Tahrim (Yasaklama)",
       "verses": [
         {
           "number": 1,
@@ -21360,7 +21360,7 @@
     },
     {
       "number": 67,
-      "name_tr": "67. Mulk (Yönetim)",
+      "name_tr": "Mulk (Yönetim)",
       "verses": [
         {
           "number": 1,
@@ -21486,7 +21486,7 @@
     },
     {
       "number": 68,
-      "name_tr": "68. Kalem (Kalem)",
+      "name_tr": "Kalem (Kalem)",
       "verses": [
         {
           "number": 1,
@@ -21700,7 +21700,7 @@
     },
     {
       "number": 69,
-      "name_tr": "69. Hakka (Gerçekleşen)",
+      "name_tr": "Hakka (Gerçekleşen)",
       "verses": [
         {
           "number": 1,
@@ -21914,7 +21914,7 @@
     },
     {
       "number": 70,
-      "name_tr": "70. Mearic (Yükseliş Yolları)",
+      "name_tr": "Mearic (Yükseliş Yolları)",
       "verses": [
         {
           "number": 1,
@@ -22096,7 +22096,7 @@
     },
     {
       "number": 71,
-      "name_tr": "71. Nuh (Nuh)",
+      "name_tr": "Nuh (Nuh)",
       "verses": [
         {
           "number": 1,
@@ -22214,7 +22214,7 @@
     },
     {
       "number": 72,
-      "name_tr": "72. Cin (Cin)",
+      "name_tr": "Cin (Cin)",
       "verses": [
         {
           "number": 1,
@@ -22332,7 +22332,7 @@
     },
     {
       "number": 73,
-      "name_tr": "73. Müzemmil (Bürünen)",
+      "name_tr": "Müzemmil (Bürünen)",
       "verses": [
         {
           "number": 1,
@@ -22418,7 +22418,7 @@
     },
     {
       "number": 74,
-      "name_tr": "74. Muddessir (Gizlenen)",
+      "name_tr": "Muddessir (Gizlenen)",
       "verses": [
         {
           "number": 1,
@@ -22648,7 +22648,7 @@
     },
     {
       "number": 75,
-      "name_tr": "75. Kıyame (Diriliş)",
+      "name_tr": "Kıyame (Diriliş)",
       "verses": [
         {
           "number": 1,
@@ -22814,7 +22814,7 @@
     },
     {
       "number": 76,
-      "name_tr": "76. İnsan (İnsan)",
+      "name_tr": "İnsan (İnsan)",
       "verses": [
         {
           "number": 1,
@@ -22944,7 +22944,7 @@
     },
     {
       "number": 77,
-      "name_tr": "77. Murselat (Gönderilenler)",
+      "name_tr": "Murselat (Gönderilenler)",
       "verses": [
         {
           "number": 1,
@@ -23150,7 +23150,7 @@
     },
     {
       "number": 78,
-      "name_tr": "78. Nebe (Haber)",
+      "name_tr": "Nebe (Haber)",
       "verses": [
         {
           "number": 1,
@@ -23316,7 +23316,7 @@
     },
     {
       "number": 79,
-      "name_tr": "79. Naziat (Söküp Çıkaranlar)",
+      "name_tr": "Naziat (Söküp Çıkaranlar)",
       "verses": [
         {
           "number": 1,
@@ -23506,7 +23506,7 @@
     },
     {
       "number": 80,
-      "name_tr": "80. Abese (Surat Astı)",
+      "name_tr": "Abese (Surat Astı)",
       "verses": [
         {
           "number": 1,
@@ -23680,7 +23680,7 @@
     },
     {
       "number": 81,
-      "name_tr": "81. Tekvir (Yuvarlama)",
+      "name_tr": "Tekvir (Yuvarlama)",
       "verses": [
         {
           "number": 1,
@@ -23802,7 +23802,7 @@
     },
     {
       "number": 82,
-      "name_tr": "82. İnfitar (Yarılma)",
+      "name_tr": "İnfitar (Yarılma)",
       "verses": [
         {
           "number": 1,
@@ -23884,7 +23884,7 @@
     },
     {
       "number": 83,
-      "name_tr": "83. Mutaffifin (Kandıranlar)",
+      "name_tr": "Mutaffifin (Kandıranlar)",
       "verses": [
         {
           "number": 1,
@@ -24034,7 +24034,7 @@
     },
     {
       "number": 84,
-      "name_tr": "84. İnşikak (Çatlama)",
+      "name_tr": "İnşikak (Çatlama)",
       "verses": [
         {
           "number": 1,
@@ -24140,7 +24140,7 @@
     },
     {
       "number": 85,
-      "name_tr": "85. Buruc (Galaksiler)",
+      "name_tr": "Buruc (Galaksiler)",
       "verses": [
         {
           "number": 1,
@@ -24234,7 +24234,7 @@
     },
     {
       "number": 86,
-      "name_tr": "86. Tarık (Parlak Yıldız)",
+      "name_tr": "Tarık (Parlak Yıldız)",
       "verses": [
         {
           "number": 1,
@@ -24308,7 +24308,7 @@
     },
     {
       "number": 87,
-      "name_tr": "87. A'la (Yüce)",
+      "name_tr": "A'la (Yüce)",
       "verses": [
         {
           "number": 1,
@@ -24390,7 +24390,7 @@
     },
     {
       "number": 88,
-      "name_tr": "88. Ğaşiye (Bunaltan)",
+      "name_tr": "Ğaşiye (Bunaltan)",
       "verses": [
         {
           "number": 1,
@@ -24500,7 +24500,7 @@
     },
     {
       "number": 89,
-      "name_tr": "89. Fecr (Tan)",
+      "name_tr": "Fecr (Tan)",
       "verses": [
         {
           "number": 1,
@@ -24626,7 +24626,7 @@
     },
     {
       "number": 90,
-      "name_tr": "90. Beled (Kent)",
+      "name_tr": "Beled (Kent)",
       "verses": [
         {
           "number": 1,
@@ -24712,7 +24712,7 @@
     },
     {
       "number": 91,
-      "name_tr": "91. Şems (Güneş)",
+      "name_tr": "Şems (Güneş)",
       "verses": [
         {
           "number": 1,
@@ -24778,7 +24778,7 @@
     },
     {
       "number": 92,
-      "name_tr": "92. Leyl (Gece)",
+      "name_tr": "Leyl (Gece)",
       "verses": [
         {
           "number": 1,
@@ -24868,7 +24868,7 @@
     },
     {
       "number": 93,
-      "name_tr": "93. Duha (Kuşluk)",
+      "name_tr": "Duha (Kuşluk)",
       "verses": [
         {
           "number": 1,
@@ -24918,7 +24918,7 @@
     },
     {
       "number": 94,
-      "name_tr": "94. Şarh (Sakinleştirme)",
+      "name_tr": "Şarh (Sakinleştirme)",
       "verses": [
         {
           "number": 1,
@@ -24956,7 +24956,7 @@
     },
     {
       "number": 95,
-      "name_tr": "95. Tin (İncir)",
+      "name_tr": "Tin (İncir)",
       "verses": [
         {
           "number": 1,
@@ -24994,7 +24994,7 @@
     },
     {
       "number": 96,
-      "name_tr": "96. Alak (Embriyo)",
+      "name_tr": "Alak (Embriyo)",
       "verses": [
         {
           "number": 1,
@@ -25076,7 +25076,7 @@
     },
     {
       "number": 97,
-      "name_tr": "97. Kadr (Kudret)",
+      "name_tr": "Kadr (Kudret)",
       "verses": [
         {
           "number": 1,
@@ -25102,7 +25102,7 @@
     },
     {
       "number": 98,
-      "name_tr": "98. Beyyine (Kanıt)",
+      "name_tr": "Beyyine (Kanıt)",
       "verses": [
         {
           "number": 1,
@@ -25140,7 +25140,7 @@
     },
     {
       "number": 99,
-      "name_tr": "99. Zilzal (Deprem)",
+      "name_tr": "Zilzal (Deprem)",
       "verses": [
         {
           "number": 1,
@@ -25178,7 +25178,7 @@
     },
     {
       "number": 100,
-      "name_tr": "100. Adiyat (Aşanlar)",
+      "name_tr": "Adiyat (Aşanlar)",
       "verses": [
         {
           "number": 1,
@@ -25228,7 +25228,7 @@
     },
     {
       "number": 101,
-      "name_tr": "101. Karia (Şok)",
+      "name_tr": "Karia (Şok)",
       "verses": [
         {
           "number": 1,
@@ -25278,7 +25278,7 @@
     },
     {
       "number": 102,
-      "name_tr": "102. Tekasür (Çoğaltma Yarışı)",
+      "name_tr": "Tekasür (Çoğaltma Yarışı)",
       "verses": [
         {
           "number": 1,
@@ -25316,7 +25316,7 @@
     },
     {
       "number": 103,
-      "name_tr": "103. Asr (Çağ)",
+      "name_tr": "Asr (Çağ)",
       "verses": [
         {
           "number": 1,
@@ -25334,7 +25334,7 @@
     },
     {
       "number": 104,
-      "name_tr": "104. Humeze (Dedikoducu)",
+      "name_tr": "Humeze (Dedikoducu)",
       "verses": [
         {
           "number": 1,
@@ -25376,7 +25376,7 @@
     },
     {
       "number": 105,
-      "name_tr": "105. Fil (Fil)",
+      "name_tr": "Fil (Fil)",
       "verses": [
         {
           "number": 1,
@@ -25402,7 +25402,7 @@
     },
     {
       "number": 106,
-      "name_tr": "106. Kureyş (Kureyş)",
+      "name_tr": "Kureyş (Kureyş)",
       "verses": [
         {
           "number": 1,
@@ -25424,7 +25424,7 @@
     },
     {
       "number": 107,
-      "name_tr": "107. Maun (Yardımlaşma)",
+      "name_tr": "Maun (Yardımlaşma)",
       "verses": [
         {
           "number": 1,
@@ -25458,7 +25458,7 @@
     },
     {
       "number": 108,
-      "name_tr": "108. Kevser (Bolluk)",
+      "name_tr": "Kevser (Bolluk)",
       "verses": [
         {
           "number": 1,
@@ -25476,7 +25476,7 @@
     },
     {
       "number": 109,
-      "name_tr": "109. Kafirun (İnkarcılar)",
+      "name_tr": "Kafirun (İnkarcılar)",
       "verses": [
         {
           "number": 1,
@@ -25506,7 +25506,7 @@
     },
     {
       "number": 110,
-      "name_tr": "110. Nasr (Yardım)",
+      "name_tr": "Nasr (Yardım)",
       "verses": [
         {
           "number": 1,
@@ -25524,7 +25524,7 @@
     },
     {
       "number": 111,
-      "name_tr": "111. Mesed (Diken)",
+      "name_tr": "Mesed (Diken)",
       "verses": [
         {
           "number": 1,
@@ -25550,7 +25550,7 @@
     },
     {
       "number": 112,
-      "name_tr": "112. İhlas (Özgüleme)",
+      "name_tr": "İhlas (Özgüleme)",
       "verses": [
         {
           "number": 1,
@@ -25572,7 +25572,7 @@
     },
     {
       "number": 113,
-      "name_tr": "113. Felak (Şafak)",
+      "name_tr": "Felak (Şafak)",
       "verses": [
         {
           "number": 1,
@@ -25598,7 +25598,7 @@
     },
     {
       "number": 114,
-      "name_tr": "114. Nas (Halk)",
+      "name_tr": "Nas (Halk)",
       "verses": [
         {
           "number": 1,
