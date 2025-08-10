@@ -10,7 +10,7 @@
   <link rel="icon" href="icons/icon-192.png">
   <style>
     :root {
-      /* Koyu tema – yumuşak kontrast */
+      /* Koyu tema */
       --bg: #0e121b;
       --fg: #e6e7eb;
       --muted: #a7b0bf;
@@ -20,19 +20,13 @@
     }
 
     .light {
-      /* Açık tema – kırık beyaz zemin, lacivert metin */
+      /* Açık tema */
       --bg: #fbfbf7;
-      /* hafif krem */
       --fg: #0e223a;
-      /* koyu lacivert */
       --muted: #5a6a82;
-      /* gri-mavi */
       --card: #ffffff;
-      /* içerik kartı beyaz */
       --border: #d9dee7;
-      /* yumuşak sınır */
       --accent: #1f4fd1;
-      /* link/işaret */
     }
 
     * {
@@ -45,52 +39,20 @@
       background: var(--bg);
       color: var(--fg);
       line-height: 1.8;
-      /* okuma konforu */
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
 
-    .surah-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin: 8px 0 12px;
-    }
-
-    .verse {
-      padding: 12px 14px;
-      border-left: 3px solid var(--border);
-      margin: 8px 0;
-      border-radius: 8px;
-    }
-
-    .verse b {
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    mark {
-      background: rgba(42, 106, 230, .22);
-      padding: 0 2px;
-    }
-
-    select,
-    input[type="text"],
-    button {
-      background: var(--card);
-      color: var(--fg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 16px;
-    }
-
     header {
-      background: rgba(0, 0, 0, .16);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--bg);
       border-bottom: 1px solid var(--border);
     }
 
     .light header {
-      background: rgba(255, 255, 255, .8);
+      background: var(--bg);
     }
 
     .wrap {
@@ -107,7 +69,6 @@
     }
 
     select,
-    input[type="text"],
     button {
       background: var(--card);
       color: var(--fg);
@@ -129,31 +90,25 @@
     }
 
     .surah-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       margin: 8px 0 12px;
     }
 
     .verse {
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-left: 3px solid var(--border);
-      margin: 6px 0;
-      border-radius: 6px;
-      line-height: 1.6;
+      margin: 8px 0;
+      border-radius: 8px;
     }
 
     .verse b {
-      color: var(--muted)
+      color: var(--muted);
+      font-weight: 600;
     }
 
     .muted {
       color: var(--muted)
-    }
-
-    .flex {
-      display: flex;
-      gap: 8px;
-      align-items: center;
     }
 
     .grow {
@@ -178,9 +133,9 @@
       display: none
     }
 
-    mark {
-      background: rgba(37, 99, 235, .25);
-      padding: 0 2px;
+    .pick {
+      min-width: 56px;
+      font-weight: 700;
     }
   </style>
 </head>
@@ -191,17 +146,17 @@
       <strong>Kur’an Okuyucu</strong>
       <span class="pill">Yaşar Nuri Öztürk</span>
       <div class="grow"></div>
-      <button id="decrease">A−</button>
-      <button id="increase">A+</button>
-      <button id="themeBtn">Tema</button>
+      <button id="decrease" title="Yazıyı küçült">A−</button>
+      <button id="increase" title="Yazıyı büyüt">A+</button>
+      <button id="themeBtn" title="Tema">Tema</button>
       <button id="installBtn" class="hidden">Yükle</button>
     </div>
     <div class="wrap toolbar" style="padding-top:0">
-      <select id="surahSelect" title="Sure seç">
+      <button id="prevSurah" class="pick" aria-label="Önceki sure">&laquo;&laquo;</button>
+      <select id="surahSelect" title="Sure seç" class="grow">
         <option>Yükleniyor…</option>
       </select>
-      <input id="search" class="grow" type="text" placeholder="Ayet içinde ara">
-      <button id="clearSearch">Temizle</button>
+      <button id="nextSurah" class="pick" aria-label="Sonraki sure">&raquo;&raquo;</button>
     </div>
   </header>
 
@@ -213,28 +168,25 @@
   </main>
 
   <div class="footer wrap">
-    Çevrimdışı çalışır. PWA olarak kurulabilir. JSON statikse siteye koy.
+    Çevrimdışı çalışır. PWA olarak kurulabilir.
   </div>
 
   <script>
-    // State
     let DATA = null;
     let fontSize = parseInt(localStorage.getItem("fs") || "18", 10);
-    let theme = localStorage.getItem("theme") || "dark"; // "dark" | "light"
+    let theme = localStorage.getItem("theme") || "dark";
     let deferredPrompt = null;
 
-    // UI refs
     const content = document.getElementById('content');
     const surahSelect = document.getElementById('surahSelect');
-    const searchInput = document.getElementById('search');
-    const clearBtn = document.getElementById('clearSearch');
     const increase = document.getElementById('increase');
     const decrease = document.getElementById('decrease');
     const themeBtn = document.getElementById('themeBtn');
     const installBtn = document.getElementById('installBtn');
+    const prevBtn = document.getElementById('prevSurah');
+    const nextBtn = document.getElementById('nextSurah');
     const meta = document.getElementById('meta');
 
-    // Apply theme and font
     function applyTheme() {
       document.body.classList.toggle('light', theme === 'light');
       localStorage.setItem('theme', theme);
@@ -249,7 +201,6 @@
     decrease.onclick = () => { fontSize = Math.max(14, fontSize - 1); applyFont(); };
     themeBtn.onclick = () => { theme = theme === 'light' ? 'dark' : 'light'; applyTheme(); };
 
-    // Helpers
     function cleanName(name) { return (name || "").replace(/^\s*\d+\.\s*/, ""); }
 
     function renderSurahList() {
@@ -260,62 +211,59 @@
         opt.textContent = `${s.number}. ${cleanName(s.name_tr)}`;
         surahSelect.appendChild(opt);
       });
-
-      // Son kaldığı sureyi seç
-      const lastSurah = parseInt(localStorage.getItem('lastSurah') || DATA.surahs[0].number, 10);
-      if (DATA.surahs.some(x => x.number === lastSurah)) {
-        surahSelect.value = String(lastSurah);
+      const last = parseInt(localStorage.getItem('lastSurah') || DATA.surahs[0].number, 10);
+      if (DATA.surahs.some(x => x.number === last)) {
+        surahSelect.value = String(last);
       }
     }
 
-    function renderSurah(num, q = "") {
+    function renderSurah(num) {
       const s = DATA.surahs.find(x => x.number === Number(num));
       if (!s) return;
       let html = `<div class="surah-title">${s.number}. ${cleanName(s.name_tr)}</div>`;
-      const needle = q.trim().toLowerCase();
       s.verses.forEach(v => {
-        let text = v.text_tr;
-        if (needle) {
-          const re = new RegExp("(" + needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", "gi");
-          text = text.replace(re, '<mark>$1</mark>');
-        }
-        html += `<div class="verse" id="v-${s.number}-${v.number}"><b>${s.number}:${v.number}</b> ${text}</div>`;
+        html += `<div class="verse" id="v-${s.number}-${v.number}"><b>${s.number}:${v.number}</b> ${v.text_tr}</div>`;
       });
       content.innerHTML = html;
-
-      // Kayıt
       localStorage.setItem('lastSurah', String(s.number));
 
-      // Sure bazlı scroll geri yükleme
       const key = `scroll-${s.number}`;
       const saved = parseInt(localStorage.getItem(key) || "0", 10);
       if (!isNaN(saved) && saved > 0) {
         window.scrollTo({ top: saved, behavior: 'instant' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }
     }
 
-    function renderMeta() {
-      const { source, locale, translator, retrieved_at } = DATA.metadata || {};
-      // meta.textContent = `Kaynak: ${source || ''} | Dil: ${locale || ''} | Çevirmen: ${translator || ''} | Tarih: ${retrieved_at || ''}`;
+    function setSurah(num) {
+      const n = Number(num) || DATA.surahs[0].number;
+      surahSelect.value = String(n);
+      renderSurah(n);
     }
 
-    // JSON yükle
-    async function loadJSON(url) {
-      const res = await fetch(url, { cache: 'reload' });
-      if (!res.ok) throw new Error("JSON yüklenemedi: " + res.status);
-      DATA = await res.json();
-      if (!DATA?.surahs?.length) throw new Error("Beklenen format değil");
-      renderMeta();
-      renderSurahList();
-      renderSurah(Number(surahSelect.value || DATA.surahs[0].number), searchInput.value);
+    function nextSurah() {
+      const n = Number(surahSelect.value);
+      const idx = DATA.surahs.findIndex(s => s.number === n);
+      const next = DATA.surahs[(idx + 1) % DATA.surahs.length].number;
+      setSurah(next);
+    }
+    function prevSurah() {
+      const n = Number(surahSelect.value);
+      const idx = DATA.surahs.findIndex(s => s.number === n);
+      const prev = DATA.surahs[(idx - 1 + DATA.surahs.length) % DATA.surahs.length].number;
+      setSurah(prev);
     }
 
-    // Olaylar
-    surahSelect.addEventListener('change', () => renderSurah(surahSelect.value, searchInput.value));
-    searchInput.addEventListener('input', () => renderSurah(surahSelect.value, searchInput.value));
-    clearBtn.addEventListener('click', () => { searchInput.value = ""; renderSurah(surahSelect.value, ""); });
+    surahSelect.addEventListener('change', () => setSurah(surahSelect.value));
+    nextBtn.addEventListener('click', nextSurah);
+    prevBtn.addEventListener('click', prevSurah);
 
-    // Scroll pozisyonunu per-sure kaydet
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') nextSurah();
+      if (e.key === 'ArrowLeft') prevSurah();
+    });
+
     let t;
     window.addEventListener('scroll', () => {
       clearTimeout(t);
@@ -326,11 +274,24 @@
       }, 150);
     });
 
-    // İlk yükleme
+    async function loadJSON(url) {
+      const res = await fetch(url, { cache: 'reload' });
+      if (!res.ok) throw new Error("JSON yüklenemedi: " + res.status);
+      DATA = await res.json();
+      if (!DATA?.surahs?.length) throw new Error("Beklenen format değil");
+      renderMeta();
+      renderSurahList();
+      setSurah(surahSelect.value || DATA.surahs[0].number);
+    }
+
+    function renderMeta() {
+      const { source, locale, translator, retrieved_at } = DATA.metadata || {};
+      // meta.textContent = `Kaynak: ${source || ''} | Dil: ${locale || ''} | Çevirmen: ${translator || ''} | Tarih: ${retrieved_at || ''}`;
+    }
+
     loadJSON('./data/quranix_yasarnuri_simple.json')
       .catch(err => { content.innerHTML = `<div class="muted">Hata: ${err.message}</div>`; });
 
-    // PWA install
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault(); deferredPrompt = e; installBtn.classList.remove('hidden');
     });

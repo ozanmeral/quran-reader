@@ -1,4 +1,4 @@
-const CACHE = 'quran-reader-v2';
+const CACHE = 'quran-reader-v3';
 const ASSETS = [
   './',
   './index.html',
