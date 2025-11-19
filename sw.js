@@ -1,43 +1,62 @@
-const CACHE = 'quran-reader-v4';
+const CACHE_NAME = 'quran-reader-v5-optimized'; // Sürüm numarasını artırdım
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  // Buraya varsayılan veriyi ekliyoruz, diğerleri talep edildikçe cache'lenecek
   './data/quranix_yasarnuri_simple.json'
 ];
 
-// Install: cache app shell + data
+// Install: Temel dosyaları cache'le
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
-// Activate: cleanup old caches
+// Activate: Eski cache'leri temizle
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      )
     )
   );
   self.clients.claim();
 });
 
-// Network-first for JSON, cache-first for shell
+// Fetch: Network-first (JSON için), Cache-first (Static için)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
+  
+  // Veri dosyaları (json) için önce ağa git, olmazsa cache'e bak, o da yoksa hata
+  // Bu sayede veri güncellemeleri anında yansır.
   if (url.pathname.endsWith('.json')) {
     e.respondWith(
-      fetch(e.request).then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-        return res;
-      }).catch(() => caches.match(e.request))
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
     );
-  } else {
-    e.respondWith(
-      caches.match(e.request).then(hit => hit || fetch(e.request))
-    );
+    return;
   }
+
+  // Diğer tüm varlıklar için önce Cache
+  e.respondWith(
+    caches.match(e.request).then(response => {
+      return response || fetch(e.request).then(res => {
+        // Dinamik olarak yüklenen yeni dosyaları da cache'e at
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        return res;
+      });
+    })
+  );
 });

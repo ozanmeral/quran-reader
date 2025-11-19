@@ -2,199 +2,477 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8">
-  <title>Kur’an (Yaşar Nuri) – Okuyucu</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0f172a">
+  <title>Kur’an Okuyucu</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="description" content="Sade, reklamsız ve çevrimdışı Kur'an meali okuyucu.">
+  <meta name="theme-color" content="#fdf6e3">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
 
   <style>
-    :root{
-      --bg:#0e121b; --fg:#e6e7eb; --muted:#a7b0bf; --card:#121826; --border:#223147; --accent:#2a6ae6;
-    }
-    .light{
-      --bg:#fbfbf7; --fg:#0e223a; --muted:#5a6a82; --card:#ffffff; --border:#d9dee7; --accent:#1f4fd1;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
-      font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-      background:var(--bg); color:var(--fg); line-height:1.8;
-      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    /* --- TEMEL AYARLAR --- */
+    :root {
+      --bg-color: #fdf6e3; /* Krem/Kağıt rengi - Gözü yormaz */
+      --text-color: #2c3e50;
+      --panel-bg: #ffffff;
+      --border-color: #e0e0e0;
+      --accent-color: #2980b9;
+      --nav-bg: #fdf6e3;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
-    /* Non-sticky title row */
-    header{background:var(--bg); border-bottom:1px solid var(--border)}
-    .wrap{max-width:900px;margin:0 auto}
-    .headrow{display:flex;gap:8px;align-items:center;padding:12px 16px}
-    .grow{flex:1}
-    .pill{background:var(--card);padding:6px 10px;border-radius:999px;border:1px solid var(--border)}
-
-    /* Sticky nav lives OUTSIDE header */
-    .navwrap{
-      position:-webkit-sticky; position:sticky; top:0; z-index:1000;
-      background:var(--bg);
-      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-      will-change:top;
-    }
-    .navgrid{
-      display:grid;
-      grid-template-columns:56px minmax(0,1fr) 56px;
-      gap:8px; align-items:center;
-      padding:10px 16px;
-      white-space:nowrap;   /* never wrap */
-    }
-    .navgrid select{
-      width:100%; min-width:0;
-      overflow:hidden; text-overflow:ellipsis;
-      background:var(--card); color:var(--fg);
-      border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:16px;
-    }
-    .pick{
-      width:56px;height:42px;display:inline-flex;align-items:center;justify-content:center;
-      background:var(--card); color:var(--fg);
-      border:1px solid var(--border); border-radius:10px; font-weight:700; letter-spacing:.3px; padding:0; user-select:none; cursor:pointer;
+    /* Koyu Tema */
+    body.dark-mode {
+      --bg-color: #1a1a1a;
+      --text-color: #e0e0e0;
+      --panel-bg: #2d2d2d;
+      --border-color: #404040;
+      --accent-color: #64b5f6;
+      --nav-bg: #1a1a1a;
     }
 
-    /* Controls (top-right) */
-    button{
-      background:var(--card); color:var(--fg);
-      border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:16px; cursor:pointer;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      margin: 0; padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+      padding-bottom: 80px; /* Alt navigasyon için boşluk */
     }
 
-    /* Content */
-    main{padding:16px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
-    .surah-title{font-size:22px;font-weight:700;margin:8px 0 12px}
-    .verse{padding:12px 14px;border-left:3px solid var(--border);margin:8px 0;border-radius:8px}
-    .verse b{color:var(--muted);font-weight:600}
-    .muted{color:var(--muted)}
-    .footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 0 40px}
-    .hidden{display:none}
-
-    /* Tighten on very small screens */
-    @media (max-width:380px){
-      .headrow{padding:10px 12px}
-      .navgrid{padding:8px 12px;gap:6px;grid-template-columns:52px minmax(0,1fr) 52px}
-      .pick{width:52px;height:40px}
-      button,.navgrid select{font-size:15px}
+    /* --- HEADER --- */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      backdrop-filter: blur(8px); /* Modern cam efekti */
     }
+
+    h1 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+
+    .header-actions button {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-color); padding: 8px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-actions button:hover { background-color: var(--border-color); }
+    
+    /* İkon boyutları */
+    svg { width: 24px; height: 24px; fill: currentcolor; }
+
+    /* --- AYARLAR MENÜSÜ (MODAL GİBİ) --- */
+    #settingsPanel {
+      display: none;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px;
+      animation: slideDown 0.2s ease-out;
+    }
+    #settingsPanel.active { display: block; }
+
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .setting-row:last-child { border: 0; margin: 0; padding: 0; }
+    .setting-label { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;}
+    
+    /* Kontrol Grupları */
+    .control-group { display: flex; gap: 10px; align-items: center; }
+    
+    select {
+      padding: 8px 12px; border-radius: 8px;
+      background: var(--bg-color); color: var(--text-color);
+      border: 1px solid var(--border-color);
+      font-size: 1rem; max-width: 200px;
+    }
+
+    .btn-group button {
+      padding: 6px 12px; border: 1px solid var(--border-color);
+      background: var(--bg-color); color: var(--text-color);
+      font-size: 1rem; cursor: pointer;
+    }
+    .btn-group button:first-child { border-radius: 8px 0 0 8px; }
+    .btn-group button:last-child { border-radius: 0 8px 8px 0; border-left: none;}
+
+    /* --- ANA İÇERİK (OKUMA ALANI) --- */
+    main {
+      max-width: 800px; margin: 0 auto; padding: 20px 16px;
+    }
+
+    .surah-title {
+      text-align: center; margin: 30px 0;
+      font-size: 1.8rem; font-weight: 800;
+      color: var(--accent-color);
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .verse-container {
+      font-family: 'Georgia', 'Times New Roman', serif; /* Okuma için serif font */
+      font-size: 1.2rem; /* Varsayılan boyut */
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .verse-num {
+      color: var(--accent-color);
+      font-weight: bold;
+      font-family: sans-serif;
+      font-size: 0.8em;
+      margin-right: 8px;
+      opacity: 0.8;
+    }
+
+    /* --- ALT NAVİGASYON (STICKY) --- */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--panel-bg);
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: 60px 1fr 60px;
+      align-items: center;
+      padding: 10px;
+      z-index: 90;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-btn {
+      background: none; border: none;
+      color: var(--text-color);
+      font-size: 1.5rem; cursor: pointer;
+      height: 100%; width: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+    #surahSelect {
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Animations */
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hidden { display: none !important; }
+
+    /* Yükleniyor Mesajı */
+    #loading { text-align: center; padding: 40px; color: var(--text-color); opacity: 0.7; }
+
   </style>
 </head>
 <body>
 
-  <!-- Non-sticky header -->
+  <!-- Header: Başlık ve Ayarlar Butonu -->
   <header>
-    <div class="wrap headrow">
-      <strong style="font-size:22px">Kur’an Oku</strong>
-      <!-- <span class="pill">Yaşar Nuri Öztürk</span> -->
-      <div class="grow"></div>
-      <button id="decrease" title="Yazıyı küçült">A−</button>
-      <button id="increase" title="Yazıyı büyüt">A+</button>
-      <button id="themeBtn" title="Tema">Tema</button>
-      <button id="installBtn" class="hidden">Yükle</button>
+    <h1 id="appTitle">Kur'an Okuyucu</h1>
+    <div class="header-actions">
+      <!-- Ayarlar Butonu -->
+      <button id="settingsBtn" aria-label="Ayarlar">
+        <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+      </button>
     </div>
   </header>
 
-  <!-- Sticky nav outside header -->
-  <div class="navwrap">
-    <div class="wrap navgrid">
-      <button id="prevSurah" class="pick" aria-label="Önceki sure">&laquo;&laquo;</button>
-      <select id="surahSelect" title="Sure seç">
-        <option>Yükleniyor…</option>
+  <!-- Ayarlar Paneli (Açılır/Kapanır) -->
+  <div id="settingsPanel">
+    
+    <!-- 1. Kaynak Seçimi -->
+    <div class="setting-row">
+      <div class="setting-label">
+        <svg style="width:20px;height:20px;margin-right:5px" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+        Çeviri
+      </div>
+      <select id="sourceSelect">
+        <!-- JS ile doldurulacak -->
       </select>
-      <button id="nextSurah" class="pick" aria-label="Sonraki sure">&raquo;&raquo;</button>
     </div>
+
+    <!-- 2. Font Boyutu -->
+    <div class="setting-row">
+      <div class="setting-label">
+        <svg style="width:20px;height:20px;margin-right:5px" viewBox="0 0 24 24"><path d="M2.5,4v3h5v12h3V7h5V4H2.5z M21.5,9h-9v3h3v7h3v-7h3V9z"/></svg>
+        Yazı Boyutu
+      </div>
+      <div class="btn-group">
+        <button id="fontDec">A-</button>
+        <button id="fontInc">A+</button>
+      </div>
+    </div>
+
+    <!-- 3. Tema (Aydınlık/Karanlık) -->
+    <div class="setting-row">
+      <div class="setting-label">
+        <svg style="width:20px;height:20px;margin-right:5px" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+        Görünüm
+      </div>
+      <select id="themeSelect">
+        <option value="light">Aydınlık (Kağıt)</option>
+        <option value="dark">Karanlık (Gece)</option>
+      </select>
+    </div>
+    
+    <!-- 4. Uygulamayı Yükle (Sadece PWA ise görünür) -->
+    <div id="installContainer" class="setting-row hidden">
+      <div class="setting-label">Uygulama</div>
+      <button id="installBtn" style="background:var(--accent-color); color:white; border:none; border-radius:6px; padding:8px 16px;">Cihaza Yükle</button>
+    </div>
+
   </div>
 
-  <main class="wrap">
-    <div id="meta" class="muted"></div>
-    <div id="content" class="card"><div class="muted">Veri yükleniyor…</div></div>
+  <!-- Ana Okuma Alanı -->
+  <main id="mainContent">
+    <div id="loading">Veriler yükleniyor...</div>
+    <!-- Sure içeriği buraya gelecek -->
   </main>
 
-  <div class="footer wrap">Çevrimdışı çalışır. PWA olarak kurulabilir.</div>
+  <!-- Alt Navigasyon -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" id="prevSurah" aria-label="Önceki Sure">&laquo;</button>
+    <select id="navSurahSelect" aria-label="Sure Seç">
+      <option>Yükleniyor...</option>
+    </select>
+    <button class="nav-btn" id="nextSurah" aria-label="Sonraki Sure">&raquo;</button>
+  </nav>
 
   <script>
-    let DATA=null;
-    let fontSize=parseInt(localStorage.getItem("fs")||"18",10);
-    let theme=localStorage.getItem("theme")||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
-    let deferredPrompt=null;
+    // --- YAPILANDIRMA ---
+    // Yeni kaynak eklemek için bu listeye ekleme yapmanız yeterli.
+    // Dosya isimlerinin 'data/' klasöründe olduğundan emin olun.
+    const SOURCES = [
+      { id: 'yasar', name: 'Yaşar Nuri Öztürk', file: 'data/quranix_yasarnuri_simple.json' },
+      // İleride eklenecek örnek:
+      // { id: 'elmalili', name: 'Elmalılı Hamdi Yazır', file: 'data/elmalili.json' }
+    ];
 
-    const content=document.getElementById('content');
-    const surahSelect=document.getElementById('surahSelect');
-    const increase=document.getElementById('increase');
-    const decrease=document.getElementById('decrease');
-    const themeBtn=document.getElementById('themeBtn');
-    const installBtn=document.getElementById('installBtn');
-    const prevBtn=document.getElementById('prevSurah');
-    const nextBtn=document.getElementById('nextSurah');
-    const meta=document.getElementById('meta');
+    // --- DURUM YÖNETİMİ ---
+    let state = {
+      currentSourceId: localStorage.getItem('q_source') || SOURCES[0].id,
+      currentSurahNum: parseInt(localStorage.getItem('q_lastSurah')) || 1,
+      fontSize: parseInt(localStorage.getItem('q_fontSize')) || 18, // px
+      theme: localStorage.getItem('q_theme') || 'light',
+      data: null // Yüklenen JSON verisi
+    };
 
-    function applyTheme(){ document.body.classList.toggle('light', theme==='light'); localStorage.setItem('theme',theme); }
-    function applyFont(){ document.documentElement.style.fontSize=fontSize+"px"; localStorage.setItem("fs",String(fontSize)); }
-    applyTheme(); applyFont();
-    increase.onclick=()=>{ fontSize=Math.min(28,fontSize+1); applyFont(); };
-    decrease.onclick=()=>{ fontSize=Math.max(14,fontSize-1); applyFont(); };
-    themeBtn.onclick=()=>{ theme=theme==='light'?'dark':'light'; applyTheme(); };
+    // --- DOM ELEMENTLERİ ---
+    const els = {
+      main: document.getElementById('mainContent'),
+      title: document.getElementById('appTitle'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      settingsPanel: document.getElementById('settingsPanel'),
+      sourceSelect: document.getElementById('sourceSelect'),
+      fontInc: document.getElementById('fontInc'),
+      fontDec: document.getElementById('fontDec'),
+      themeSelect: document.getElementById('themeSelect'),
+      navSurahSelect: document.getElementById('navSurahSelect'),
+      prevBtn: document.getElementById('prevSurah'),
+      nextBtn: document.getElementById('nextSurah'),
+      installBtn: document.getElementById('installBtn'),
+      installContainer: document.getElementById('installContainer')
+    };
 
-    function cleanName(name){ return (name||"").replace(/^\s*\d+\.\s*/,""); }
+    // --- BAŞLATMA ---
+    async function init() {
+      applyTheme();
+      applyFontSize();
+      populateSourceSelect();
 
-    function renderSurahList(){
-      surahSelect.innerHTML="";
-      DATA.surahs.forEach(s=>{
-        const opt=document.createElement('option');
-        opt.value=s.number; opt.textContent=`${s.number}. ${cleanName(s.name_tr)}`;
-        surahSelect.appendChild(opt);
+      // Ayarlar panelini aç/kapa
+      els.settingsBtn.addEventListener('click', () => {
+        els.settingsPanel.classList.toggle('active');
       });
-      const last=parseInt(localStorage.getItem('lastSurah')||DATA.surahs[0].number,10);
-      if (DATA.surahs.some(x=>x.number===last)) surahSelect.value=String(last);
+
+      // Olay Dinleyicileri
+      els.sourceSelect.addEventListener('change', (e) => changeSource(e.target.value));
+      els.themeSelect.addEventListener('change', (e) => changeTheme(e.target.value));
+      els.fontInc.addEventListener('click', () => changeFontSize(1));
+      els.fontDec.addEventListener('click', () => changeFontSize(-1));
+      els.navSurahSelect.addEventListener('change', (e) => goToSurah(e.target.value));
+      els.prevBtn.addEventListener('click', () => changeSurah(-1));
+      els.nextBtn.addEventListener('click', () => changeSurah(1));
+
+      // Veriyi Yükle
+      await loadSourceData(state.currentSourceId);
     }
 
-    function renderSurah(num){
-      const s=DATA.surahs.find(x=>x.number===Number(num)); if(!s) return;
-      let html=`<div class="surah-title">${s.number}. ${cleanName(s.name_tr)}</div>`;
-      s.verses.forEach(v=>{
-        html+=`<div class="verse" id="v-${s.number}-${v.number}"><b>${s.number}:${v.number}</b> ${v.text_tr}</div>`;
-      });
-      content.innerHTML=html;
-      localStorage.setItem('lastSurah',String(s.number));
-
-      const key=`scroll-${s.number}`;
-      const saved=parseInt(localStorage.getItem(key)||"0",10);
-      window.scrollTo({ top: (!isNaN(saved)&&saved>0)?saved:0, behavior:'instant' });
+    // --- VERİ İŞLEMLERİ ---
+    async function loadSourceData(sourceId) {
+      const source = SOURCES.find(s => s.id === sourceId) || SOURCES[0];
+      els.main.innerHTML = `<div id="loading">${source.name} yükleniyor...</div>`;
+      
+      try {
+        const res = await fetch(source.file);
+        if (!res.ok) throw new Error('Dosya bulunamadı');
+        state.data = await res.json();
+        
+        // Veri yüklendi, arayüzü güncelle
+        state.currentSourceId = sourceId;
+        localStorage.setItem('q_source', sourceId);
+        
+        renderNavOptions();
+        goToSurah(state.currentSurahNum); // Mevcut sureyi tekrar çiz
+        
+      } catch (err) {
+        els.main.innerHTML = `<div style="text-align:center;color:red;padding:20px">Hata: Veri yüklenemedi.<br>${err.message}</div>`;
+      }
     }
 
-    function setSurah(num){ const n=Number(num)||DATA.surahs[0].number; surahSelect.value=String(n); renderSurah(n); }
-    function nextSurah(){ const n=Number(surahSelect.value); const i=DATA.surahs.findIndex(s=>s.number===n); setSurah(DATA.surahs[(i+1)%DATA.surahs.length].number); }
-    function prevSurah(){ const n=Number(surahSelect.value); const i=DATA.surahs.findIndex(s=>s.number===n); setSurah(DATA.surahs[(i-1+DATA.surahs.length)%DATA.surahs.length].number); }
+    function populateSourceSelect() {
+      els.sourceSelect.innerHTML = SOURCES.map(s => 
+        `<option value="${s.id}" ${s.id === state.currentSourceId ? 'selected' : ''}>${s.name}</option>`
+      ).join('');
+    }
 
-    surahSelect.addEventListener('change',()=>setSurah(surahSelect.value));
-    nextBtn.addEventListener('click',nextSurah);
-    prevBtn.addEventListener('click',prevSurah);
-    window.addEventListener('keydown',e=>{ if(e.key==='ArrowRight') nextSurah(); if(e.key==='ArrowLeft') prevSurah(); });
+    // --- GÖRÜNÜM İŞLEMLERİ ---
+    function renderNavOptions() {
+      if (!state.data) return;
+      els.navSurahSelect.innerHTML = state.data.surahs.map(s => 
+        `<option value="${s.number}">${s.number}. ${s.name_tr.replace(/^\d+\.\s*/, '')}</option>`
+      ).join('');
+      els.navSurahSelect.value = state.currentSurahNum;
+    }
 
-    let t;
-    window.addEventListener('scroll',()=>{
-      clearTimeout(t);
-      const n=Number(surahSelect.value||0); if(!n) return;
-      t=setTimeout(()=>{ localStorage.setItem(`scroll-${n}`,String(window.scrollY)); },150);
+    function renderSurah(surahNum) {
+      const surah = state.data.surahs.find(s => s.number == surahNum);
+      if (!surah) return;
+
+      // Başlık güncelle
+      els.title.textContent = `Kur'an - ${surah.name_tr}`;
+      
+      // İçerik oluştur
+      let html = `<div class="surah-title">${surah.name_tr}</div>`;
+      
+      html += surah.verses.map(v => `
+        <div class="verse-container" id="v${v.number}">
+          <span class="verse-num">${v.number}</span>
+          ${v.text_tr}
+        </div>
+      `).join('');
+
+      // Alt boşluk (Navigasyon çubuğunun arkasında kalmasın diye)
+      html += '<div style="height: 60px;"></div>';
+
+      els.main.innerHTML = html;
+      
+      // Navigasyon durumunu güncelle
+      state.currentSurahNum = parseInt(surahNum);
+      localStorage.setItem('q_lastSurah', state.currentSurahNum);
+      els.navSurahSelect.value = state.currentSurahNum;
+      
+      // Buton durumları
+      els.prevBtn.disabled = state.currentSurahNum <= 1;
+      els.nextBtn.disabled = state.currentSurahNum >= 114;
+
+      // Kaydırma pozisyonunu geri yükle
+      const savedScroll = localStorage.getItem(`q_scroll_${state.currentSourceId}_${surahNum}`);
+      if (savedScroll) {
+        window.scrollTo(0, parseInt(savedScroll));
+      } else {
+        window.scrollTo(0, 0);
+      }
+    }
+
+    // --- OLAY İŞLEYİCİLER ---
+    function changeSource(newId) {
+      // Kaynak değişince ayarlar panelini kapatabiliriz veya açık tutabiliriz
+      // els.settingsPanel.classList.remove('active'); 
+      loadSourceData(newId);
+    }
+
+    function goToSurah(num) {
+      renderSurah(num);
+    }
+
+    function changeSurah(direction) {
+      let next = state.currentSurahNum + direction;
+      if (next >= 1 && next <= 114) {
+        goToSurah(next);
+      }
+    }
+
+    function changeTheme(val) {
+      state.theme = val;
+      localStorage.setItem('q_theme', val);
+      applyTheme();
+    }
+
+    function applyTheme() {
+      document.body.className = state.theme === 'dark' ? 'dark-mode' : '';
+      els.themeSelect.value = state.theme;
+      
+      // Meta theme-color güncelle
+      const metaThemeColor = document.querySelector("meta[name=theme-color]");
+      metaThemeColor.setAttribute("content", state.theme === 'dark' ? '#1a1a1a' : '#fdf6e3');
+    }
+
+    function changeFontSize(delta) {
+      state.fontSize += delta;
+      if (state.fontSize < 14) state.fontSize = 14;
+      if (state.fontSize > 32) state.fontSize = 32; // Maksimum sınır
+      localStorage.setItem('q_fontSize', state.fontSize);
+      applyFontSize();
+    }
+
+    function applyFontSize() {
+      // Sadece main içindeki verse-container'ı etkile
+      const style = document.createElement('style');
+      style.innerHTML = `.verse-container { font-size: ${state.fontSize}px !important; }`;
+      
+      // Varsa eski stil elementini güncelle, yoksa ekle
+      const oldStyle = document.getElementById('dynamic-font-style');
+      if (oldStyle) oldStyle.remove();
+      style.id = 'dynamic-font-style';
+      document.head.appendChild(style);
+    }
+
+    // --- KAYDIRMA TAKİBİ ---
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if(state.data) {
+          localStorage.setItem(`q_scroll_${state.currentSourceId}_${state.currentSurahNum}`, window.scrollY);
+        }
+      }, 200);
     });
 
-    async function loadJSON(url){
-      const res=await fetch(url,{cache:'reload'}); if(!res.ok) throw new Error("JSON yüklenemedi: "+res.status);
-      DATA=await res.json(); if(!DATA?.surahs?.length) throw new Error("Beklenen format değil");
-      renderMeta(); renderSurahList(); setSurah(surahSelect.value||DATA.surahs[0].number);
-    }
-    function renderMeta(){
-      const {source,locale,translator,retrieved_at}=DATA.metadata||{};
-      // meta.textContent=`Kaynak: ${source||''} | Dil: ${locale||''} | Çevirmen: ${translator||''} | Tarih: ${retrieved_at||''}`;
-    }
-    loadJSON('./data/quranix_yasarnuri_simple.json').catch(err=>{ content.innerHTML=`<div class="muted">Hata: ${err.message}</div>`; });
+    // --- PWA KURULUM ---
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      els.installContainer.classList.remove('hidden');
+    });
 
-    window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; installBtn.classList.remove('hidden'); });
-    installBtn.addEventListener('click',async()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; installBtn.classList.add('hidden'); deferredPrompt=null; });
+    els.installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        els.installContainer.classList.add('hidden');
+      }
+      deferredPrompt = null;
+    });
 
-    if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error)); }
+    // --- SERVICE WORKER ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+
+    // Uygulamayı Başlat
+    init();
+
   </script>
 </body>
 </html>
