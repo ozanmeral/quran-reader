@@ -37,11 +37,11 @@
       color: var(--text-color);
       padding-bottom: calc(var(--nav-height) + 30px);
       padding-top: 60px;
-      overscroll-behavior-y: none;
+      overscroll-behavior-y: none; /* Lastik etkisini kapat */
       overflow-x: hidden; /* Yatay kaydırmayı engelle */
     }
 
-    /* --- HEADER --- */
+    /* --- ÜST BAR --- */
     header {
       position: fixed; top: 0; left: 0; right: 0;
       height: 60px;
@@ -62,35 +62,43 @@
     }
     .settings-icon-btn svg { width: 26px; height: 26px; fill: currentColor; }
 
-    /* --- İÇERİK ALANI ve ANİMASYONLAR --- */
+    /* --- İÇERİK ALANI --- */
     main {
       max-width: 800px; margin: 0 auto; padding: 20px 16px;
       min-height: 80vh;
-      /* Animasyon için geçiş ayarları */
-      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-      opacity: 1;
-      transform: translateX(0);
+      /* Animasyonların düzgün çalışması için */
+      will-change: opacity, transform;
     }
 
-    /* Sola Kaydırınca (Sonraki Sureye Geçiş) */
-    .slide-out-left { opacity: 0; transform: translateX(-50px); }
-    .slide-in-right { animation: slideInRight 0.3s forwards; }
+    /* --- ANİMASYON SINIFLARI --- */
+    /* Sola git (Sonraki sureye geçerken eskisi sola kayar) */
+    .anim-out-left { animation: slideOutLeft 0.25s forwards ease-in; }
+    /* Sağdan gel (Sonraki sure sağdan gelir) */
+    .anim-in-right { animation: slideInRight 0.25s forwards ease-out; }
+    
+    /* Sağa git (Önceki sureye geçerken eskisi sağa kayar) */
+    .anim-out-right { animation: slideOutRight 0.25s forwards ease-in; }
+    /* Soldan gel (Önceki sure soldan gelir) */
+    .anim-in-left { animation: slideInLeft 0.25s forwards ease-out; }
 
-    /* Sağa Kaydırınca (Önceki Sureye Geçiş) */
-    .slide-out-right { opacity: 0; transform: translateX(50px); }
-    .slide-in-left { animation: slideInLeft 0.3s forwards; }
-
+    @keyframes slideOutLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(-30px); }
+    }
     @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(50px); }
+      from { opacity: 0; transform: translateX(30px); }
       to { opacity: 1; transform: translateX(0); }
     }
-
+    @keyframes slideOutRight {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(30px); }
+    }
     @keyframes slideInLeft {
-      from { opacity: 0; transform: translateX(-50px); }
+      from { opacity: 0; transform: translateX(-30px); }
       to { opacity: 1; transform: translateX(0); }
     }
 
-
+    /* --- SURE VE AYET STİLLERİ --- */
     .surah-header {
       text-align: center; margin-bottom: 30px;
       border-bottom: 2px solid var(--border-color);
@@ -249,7 +257,7 @@
       { id: 'yasar', name: 'Yaşar Nuri Öztürk', file: 'data/quranix_yasarnuri_simple.json' }
     ];
 
-    // Tarayıcının otomatik scroll hatırlamasını devre dışı bırak (Manuel kontrol için)
+    // Scroll hafızasını tarayıcıya değil bize bırak
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
@@ -260,7 +268,7 @@
       fontSize: parseInt(localStorage.getItem('q_fontSize')) || 22,
       theme: localStorage.getItem('q_theme') || 'light',
       data: null,
-      isAnimating: false // Animasyon kilidi
+      isAnimating: false // Animasyon sırasında tıklamaları engellemek için
     };
 
     const els = {
@@ -323,7 +331,6 @@
 
       let html = `<div class="surah-header"><span class="surah-name">${sData.name_tr}</span></div>`;
 
-      // Dinamik Besmele
       if (surahNum !== 1 && surahNum !== 9) {
         const fatiha = state.data.surahs.find(s => s.number === 1);
         const basmalaText = fatiha ? fatiha.verses[0].text_tr : "Rahman ve Rahim Allah'ın adıyla...";
@@ -340,7 +347,6 @@
       
       els.main.innerHTML = html;
 
-      // Scroll Yönetimi
       if (resetScroll) {
         window.scrollTo(0, 0);
       } else {
@@ -351,7 +357,7 @@
       }
     }
 
-    // --- ANİMASYONLU GEÇİŞ ---
+    // --- ANİMASYONLU GEÇİŞ FONKSİYONU ---
     async function changeSurah(dir) {
       if (state.isAnimating) return;
       const next = state.surah + dir;
@@ -359,27 +365,35 @@
       if (next >= 1 && next <= 114) {
         state.isAnimating = true;
 
-        // 1. Mevcut içeriği kaydırarak çıkar (Fade Out Slide)
-        const animClassOut = dir === 1 ? 'slide-out-left' : 'slide-out-right';
+        // 1. Hangi yöne gideceğimizi belirleyelim
+        // dir = 1 (Sonraki) -> Mevcut Sola Gider (OutLeft)
+        // dir = -1 (Önceki) -> Mevcut Sağa Gider (OutRight)
+        const animClassOut = dir === 1 ? 'anim-out-left' : 'anim-out-right';
+        
+        // Animasyonu başlat
         els.main.classList.add(animClassOut);
 
-        // Animasyonun bitmesini bekle (300ms)
-        await new Promise(r => setTimeout(r, 300));
+        // Animasyonun bitmesini bekle (250ms CSS ile uyumlu)
+        await new Promise(r => setTimeout(r, 250));
 
-        // 2. Yeni sureyi renderla ve scroll'u sıfırla (Kritik nokta burası)
+        // 2. İçeriği değiştir ve TEPEYE SAR
+        // Bu işlem kullanıcı görmeden (opacity 0 iken) yapılmalı
         renderSurah(next, true);
-        window.scrollTo(0, 0); // Hemen tepeye at
+        window.scrollTo(0, 0); // Kritik Nokta: Burada yukarı atıyoruz
 
-        // 3. Sınıfları temizle ve giriş animasyonunu hazırla
+        // 3. Çıkış sınıfını sil, Giriş sınıfını ekle
         els.main.classList.remove(animClassOut);
-        const animClassIn = dir === 1 ? 'slide-in-right' : 'slide-in-left';
+        
+        // dir = 1 -> Yeni Sağdan Gelir (InRight)
+        // dir = -1 -> Yeni Soldan Gelir (InLeft)
+        const animClassIn = dir === 1 ? 'anim-in-right' : 'anim-in-left';
         els.main.classList.add(animClassIn);
 
-        // 4. Giriş animasyonu bitince temizle
+        // 4. Giriş animasyonunun bitmesini bekle ve temizle
         setTimeout(() => {
           els.main.classList.remove(animClassIn);
           state.isAnimating = false;
-        }, 300);
+        }, 250);
       }
     }
 
@@ -422,22 +436,20 @@
 
     function handleSwipe() {
       const threshold = 80;
+      // Kaydırma mesafesi yeterliyse tetikle
       if (touchEndX < touchStartX - threshold) {
-        // Sola kaydırma -> Sonraki
-        changeSurah(1);
+        changeSurah(1); // Sola kaydırdım -> Sonraki Gelsin
       }
       if (touchEndX > touchStartX + threshold) {
-        // Sağa kaydırma -> Önceki
-        changeSurah(-1);
+        changeSurah(-1); // Sağa kaydırdım -> Önceki Gelsin
       }
     }
 
-    // --- SCROLL KAYIT ---
     let scrollTimer;
     window.addEventListener('scroll', () => {
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
-        if(state.data && !state.isAnimating) { // Animasyon sırasında kaydetme
+        if(state.data && !state.isAnimating) { 
           const pos = { surah: state.surah, scroll: window.scrollY };
           localStorage.setItem('q_lastPos', JSON.stringify(pos));
         }
