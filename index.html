@@ -166,6 +166,23 @@
       font-family: sans-serif;
     }
 
+    .footnote-ref {
+      color: var(--highlight);
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.75em;
+      vertical-align: super;
+      margin: 0 2px;
+      text-decoration: none;
+    }
+
+    .footnote-content {
+      font-family: 'Georgia', serif;
+      line-height: 1.6;
+      font-size: 1.1rem;
+      white-space: pre-wrap;
+    }
+
     /* --- ALT NAVİGASYON --- */
     .bottom-nav {
       position: fixed;
@@ -332,6 +349,15 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="footnoteModal">
+    <div class="settings-modal">
+      <div class="modal-header">
+        <h2 id="footnoteTitle">Dipnot</h2><button class="close-btn" id="closeFootnote">&times;</button>
+      </div>
+      <div id="footnoteBody" class="footnote-content"></div>
+    </div>
+  </div>
+
   <div id="slider-container">
     <div id="slider-track">
       <div class="slide" id="slide-prev"></div>
@@ -420,19 +446,48 @@
 
       if (num !== 1 && num !== 9) {
         const fatiha = state.data.surahs.find(x => x.number === 1);
-        const basmala = fatiha ? fatiha.verses[0].text_tr : "Besmele...";
+        // Besmele sonundaki dipnot numarasını temizle (örn: "1")
+        const basmala = fatiha ? fatiha.verses[0].text_tr.replace(/\s*\d+\s*$/, '') : "Besmele...";
         html += `<div class="basmala-container">${basmala}</div>`;
       }
 
-      html += s.verses.map(v => `
+      html += s.verses.map(v => {
+        // Metin içindeki sayıları dipnot linkine çevir
+        const text = v.text_tr.replace(/\b(\d+)\b/g, (match) => {
+          return `<sup class="footnote-ref" onclick="showFootnote(${num}, ${v.number}, ${match})">${match}</sup>`;
+        });
+
+        return `
         <div class="verse-container" id="s${num}-v${v.number}">
-          <span class="verse-num">${v.number}</span>${v.text_tr}
+          <span class="verse-num">${v.number}</span>${text}
         </div>
-      `).join('');
+      `}).join('');
 
       html += '<div style="height:100px"></div>';
       return html;
     }
+
+    window.showFootnote = function (sNum, vNum, fNum) {
+      const s = state.data.surahs.find(x => x.number === sNum);
+      if (!s) return;
+      const v = s.verses.find(x => x.number === vNum);
+      if (!v || !v.footnotes) return;
+
+      // Dipnot metnini bul
+      // Genelde "Dipnot X" ile başlar. Bazen birleşik olabilir.
+      let content = v.footnotes.find(f => f.startsWith(`Dipnot ${fNum}`) || f.startsWith(`${fNum}.`));
+
+      // Bulamazsa ve dipnot varsa, hepsini göster (fallback)
+      if (!content && v.footnotes.length > 0) {
+        content = v.footnotes.join('\n\n');
+      }
+
+      if (content) {
+        document.getElementById('footnoteTitle').innerText = `Dipnot ${fNum}`;
+        document.getElementById('footnoteBody').innerText = content;
+        document.getElementById('footnoteModal').classList.add('active');
+      }
+    };
 
     function updateSlidesContent() {
       slides.curr.innerHTML = getSurahHTML(state.surah);
@@ -595,6 +650,10 @@
       document.getElementById('openSettings').onclick = () => modal.classList.add('active');
       document.getElementById('closeSettings').onclick = () => modal.classList.remove('active');
       modal.onclick = e => { if (e.target === modal) modal.classList.remove('active'); };
+
+      const fModal = document.getElementById('footnoteModal');
+      document.getElementById('closeFootnote').onclick = () => fModal.classList.remove('active');
+      fModal.onclick = e => { if (e.target === fModal) fModal.classList.remove('active'); };
 
       document.getElementById('fontInc').onclick = () => { state.fontSize = Math.min(40, state.fontSize + 2); applyFontSize(); };
       document.getElementById('fontDec').onclick = () => { state.fontSize = Math.max(16, state.fontSize - 2); applyFontSize(); };
