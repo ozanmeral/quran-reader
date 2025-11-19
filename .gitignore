@@ -1,0 +1,29 @@
+# Operating System files (Mac/Windows)
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor & IDE settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.swp
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node modules (If you add a build tool or server later)
+node_modules/
+dist/
+
+# Local Environment Variables (Safety measure)
+.env
+.env.local
+
+# Mac Trash
+.Trashes
