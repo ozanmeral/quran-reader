@@ -1,16 +1,18 @@
 <!doctype html>
 <html lang="tr">
+
 <head>
   <meta charset="utf-8">
   <title>Kur’an Okuyucu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#fdf6e3">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
 
   <style>
     :root {
-      --bg-color: #fdf6e3; 
+      --bg-color: #fdf6e3;
       --text-color: #2c3e50;
       --panel-bg: #ffffff;
       --border-color: #dcdcdc;
@@ -28,33 +30,63 @@
       --accent-color: #90caf9;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
-    html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
-      overflow: hidden; /* Ana sayfa kaymasın */
-      overscroll-behavior: none; /* Tüm esnemeleri kapat */
+      overflow: hidden;
+      /* Ana sayfa kaymasın */
+      overscroll-behavior: none;
+      /* Tüm esnemeleri kapat */
     }
 
     /* --- ÜST BAR --- */
     header {
-      position: fixed; top: 0; left: 0; right: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
       height: var(--header-height);
       background: var(--panel-bg);
       border-bottom: 1px solid var(--border-color);
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 0 16px;
       padding-top: env(safe-area-inset-top);
       z-index: 20;
     }
 
-    h1 { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--accent-color); }
-    .settings-btn svg { width: 26px; height: 26px; fill: currentColor; }
-    .settings-btn { background:none; border:none; color:var(--text-color); cursor:pointer; padding:10px; }
+    h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--accent-color);
+    }
+
+    .settings-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: currentColor;
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      padding: 10px;
+    }
 
     /* --- SLIDER KUTUSU --- */
     #slider-container {
@@ -68,9 +100,11 @@
 
     #slider-track {
       display: flex;
-      width: 300%; /* 3 Vagon */
+      width: 300%;
+      /* 3 Vagon */
       height: 100%;
-      transform: translateX(-33.3333%); /* Ortayı göster */
+      transform: translateX(-33.3333%);
+      /* Ortayı göster */
       will-change: transform;
     }
 
@@ -82,23 +116,33 @@
       -webkit-overflow-scrolling: touch;
       padding: 20px 16px;
       padding-bottom: 40px;
-      
+
       /* Lastik etkisini (Bounce) kapatan sihirli kod */
       overscroll-behavior-y: none;
     }
 
     /* --- İÇERİK STİLLERİ --- */
     .surah-header {
-      text-align: center; margin-bottom: 30px;
+      text-align: center;
+      margin-bottom: 30px;
       border-bottom: 2px solid var(--border-color);
       padding-bottom: 15px;
     }
-    .surah-name { font-size: 1.8rem; font-weight: 900; color: var(--highlight); display: block;}
-    
+
+    .surah-name {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--highlight);
+      display: block;
+    }
+
     .basmala-container {
-      text-align: center; font-family: 'Georgia', serif;
-      font-size: 1.3rem; margin: 20px 0 40px 0;
-      color: var(--text-color); opacity: 0.8;
+      text-align: center;
+      font-family: 'Georgia', serif;
+      font-size: 1.3rem;
+      margin: 20px 0 40px 0;
+      color: var(--text-color);
+      opacity: 0.8;
     }
 
     .verse-container {
@@ -108,89 +152,182 @@
       padding-bottom: 15px;
       border-bottom: 1px solid var(--border-color);
     }
-    
+
     .verse-num {
       display: inline-block;
       background-color: var(--border-color);
       color: var(--text-color);
-      font-size: 0.85rem; font-weight: bold;
-      padding: 2px 8px; border-radius: 8px;
-      margin-right: 8px; vertical-align: text-top; font-family: sans-serif;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-right: 8px;
+      vertical-align: text-top;
+      font-family: sans-serif;
     }
 
     /* --- ALT NAVİGASYON --- */
     .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       height: var(--nav-height);
       background: var(--panel-bg);
       border-top: 1px solid var(--border-color);
       display: grid;
       grid-template-columns: 60px 1fr 80px 60px;
-      gap: 5px; align-items: center; z-index: 20;
-      padding: 5px; padding-bottom: calc(5px + env(safe-area-inset-bottom));
+      gap: 5px;
+      align-items: center;
+      z-index: 20;
+      padding: 5px;
+      padding-bottom: calc(5px + env(safe-area-inset-bottom));
     }
 
     .nav-btn {
-      background: var(--bg-color); border: none; border-radius: 8px;
-      color: var(--text-color); font-size: 1.5rem; cursor: pointer;
-      height: 100%; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-color);
+      border: none;
+      border-radius: 8px;
+      color: var(--text-color);
+      font-size: 1.5rem;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .nav-select {
-      height: 100%; padding: 0 10px; font-size: 1rem; font-weight: bold;
-      background-color: var(--bg-color); color: var(--text-color);
-      border: 1px solid var(--border-color); border-radius: 8px; text-align: center;
+      height: 100%;
+      padding: 0 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      text-align: center;
     }
 
     /* --- MODAL --- */
     .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 50;
-      align-items: center; justify-content: center; backdrop-filter: blur(4px);
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
     }
-    .modal-overlay.active { display: flex; }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
     .settings-modal {
-      background: var(--panel-bg); width: 90%; max-width: 400px;
-      border-radius: 16px; padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      background: var(--panel-bg);
+      width: 90%;
+      max-width: 400px;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
+
     .modal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
     }
-    .setting-row { margin-bottom: 20px; }
-    .setting-label { display: block; font-weight: 600; margin-bottom: 8px; }
-    select, .btn-group button, #installBtn {
-      width: 100%; padding: 12px; border-radius: 8px;
-      background: var(--bg-color); color: var(--text-color);
-      border: 1px solid var(--border-color); font-size: 1rem;
+
+    .setting-row {
+      margin-bottom: 20px;
     }
-    .btn-group { display: flex; }
-    .btn-group button:first-child { border-radius: 8px 0 0 8px; border-right: none;}
-    .btn-group button:last-child { border-radius: 0 8px 8px 0; }
-    .close-btn { background:none; border:none; font-size:2rem; color:var(--text-color); }
-    .hidden { display: none !important; }
+
+    .setting-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    select,
+    .btn-group button,
+    #installBtn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+    }
+
+    .btn-group {
+      display: flex;
+    }
+
+    .btn-group button:first-child {
+      border-radius: 8px 0 0 8px;
+      border-right: none;
+    }
+
+    .btn-group button:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: var(--text-color);
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     #loading-msg {
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        font-size: 1.2rem; color: var(--text-color);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      color: var(--text-color);
     }
   </style>
 </head>
+
 <body>
 
   <header>
     <h1>Kur'an Oku</h1>
     <button class="settings-btn" id="openSettings">
-      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+      </svg>
     </button>
   </header>
 
   <div class="modal-overlay" id="settingsModal">
     <div class="settings-modal">
-      <div class="modal-header"><h2>Ayarlar</h2><button class="close-btn" id="closeSettings">&times;</button></div>
+      <div class="modal-header">
+        <h2>Ayarlar</h2><button class="close-btn" id="closeSettings">&times;</button>
+      </div>
       <div class="setting-row"><label class="setting-label">Çeviri</label><select id="sourceSelect"></select></div>
-      <div class="setting-row"><label class="setting-label">Görünüm</label><select id="themeSelect"><option value="light">☀️ Aydınlık</option><option value="dark">🌙 Karanlık</option></select></div>
-      <div class="setting-row"><label class="setting-label">Yazı Boyutu</label><div class="btn-group"><button id="fontDec">A-</button><button id="fontInc">A+</button></div></div>
+      <div class="setting-row"><label class="setting-label">Görünüm</label><select id="themeSelect">
+          <option value="light">☀️ Aydınlık</option>
+          <option value="dark">🌙 Karanlık</option>
+        </select></div>
+      <div class="setting-row"><label class="setting-label">Yazı Boyutu</label>
+        <div class="btn-group"><button id="fontDec">A-</button><button id="fontInc">A+</button></div>
+      </div>
       <div id="installContainer" class="setting-row hidden"><button id="installBtn">Uygulamayı Yükle</button></div>
     </div>
   </div>
@@ -198,21 +335,27 @@
   <div id="slider-container">
     <div id="slider-track">
       <div class="slide" id="slide-prev"></div>
-      <div class="slide" id="slide-curr"><div id="loading-msg">Yükleniyor...</div></div>
+      <div class="slide" id="slide-curr">
+        <div id="loading-msg">Yükleniyor...</div>
+      </div>
       <div class="slide" id="slide-next"></div>
     </div>
   </div>
 
   <nav class="bottom-nav">
-    <button class="nav-btn" id="prevBtn"><svg style="width:30px;height:30px;fill:currentColor" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+    <button class="nav-btn" id="prevBtn"><svg style="width:30px;height:30px;fill:currentColor" viewBox="0 0 24 24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg></button>
     <select id="navSurahSelect" class="nav-select"></select>
     <select id="navVerseSelect" class="nav-select"></select>
-    <button class="nav-btn" id="nextBtn"><svg style="width:30px;height:30px;fill:currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+    <button class="nav-btn" id="nextBtn"><svg style="width:30px;height:30px;fill:currentColor" viewBox="0 0 24 24">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+      </svg></button>
   </nav>
 
   <script>
-    const SOURCES = [{ id: 'yasar', name: 'Yaşar Nuri Öztürk', file: 'data/quranix_yasarnuri_simple.json' }];
-    
+    const SOURCES = [{ id: 'yasar', name: 'Yaşar Nuri Öztürk', file: 'data/quranix_yasarnuri_simple.json' }, { id: 'mesaj', name: 'Edip Yüksel - Mesaj', file: 'data/quranix_mesaj_simple.json' }];
+
     let state = {
       data: null,
       sourceId: localStorage.getItem('q_source') || SOURCES[0].id,
@@ -240,15 +383,15 @@
       applyFontSize();
       setupSettings();
       await loadData(state.sourceId);
-      
+
       const last = JSON.parse(localStorage.getItem('q_lastPos') || '{"surah":1, "scroll":0}');
       state.surah = last.surah;
-      
+
       updateSlidesContent();
-      
+
       // İlk açılışta scroll pozisyonunu ayarla
       setTimeout(() => {
-        if(slides.curr) slides.curr.scrollTop = last.scroll;
+        if (slides.curr) slides.curr.scrollTop = last.scroll;
       }, 150);
 
       setupGestures();
@@ -260,22 +403,22 @@
         const res = await fetch(src.file);
         state.data = await res.json();
         localStorage.setItem('q_source', sid);
-        
-        nav.surah.innerHTML = state.data.surahs.map(s => 
+
+        nav.surah.innerHTML = state.data.surahs.map(s =>
           `<option value="${s.number}">${s.number}. ${s.name_tr.replace(/^\d+\.\s*/, '')}</option>`
         ).join('');
-      } catch(e) {
+      } catch (e) {
         slides.curr.innerHTML = `<div style="text-align:center;padding:50px">Hata: ${e.message}</div>`;
       }
     }
 
     function getSurahHTML(num) {
       const s = state.data.surahs.find(x => x.number === num);
-      if(!s) return "";
-      
+      if (!s) return "";
+
       let html = `<div class="surah-header"><span class="surah-name">${s.name_tr}</span></div>`;
-      
-      if(num !== 1 && num !== 9) {
+
+      if (num !== 1 && num !== 9) {
         const fatiha = state.data.surahs.find(x => x.number === 1);
         const basmala = fatiha ? fatiha.verses[0].text_tr : "Besmele...";
         html += `<div class="basmala-container">${basmala}</div>`;
@@ -286,28 +429,28 @@
           <span class="verse-num">${v.number}</span>${v.text_tr}
         </div>
       `).join('');
-      
-      html += '<div style="height:100px"></div>'; 
+
+      html += '<div style="height:100px"></div>';
       return html;
     }
 
     function updateSlidesContent() {
       slides.curr.innerHTML = getSurahHTML(state.surah);
-      
-      if(state.surah > 1) slides.prev.innerHTML = getSurahHTML(state.surah - 1);
+
+      if (state.surah > 1) slides.prev.innerHTML = getSurahHTML(state.surah - 1);
       else slides.prev.innerHTML = "";
 
-      if(state.surah < 114) slides.next.innerHTML = getSurahHTML(state.surah + 1);
+      if (state.surah < 114) slides.next.innerHTML = getSurahHTML(state.surah + 1);
       else slides.next.innerHTML = "";
 
       nav.surah.value = state.surah;
       updateVerseSelect();
-      
+
       nav.prev.style.opacity = state.surah === 1 ? 0.3 : 1;
       nav.next.style.opacity = state.surah === 114 ? 0.3 : 1;
-      
+
       slides.curr.onscroll = handleScroll;
-      
+
       // Reset position
       track.style.transition = 'none';
       track.style.transform = 'translateX(-33.3333%)';
@@ -316,9 +459,9 @@
 
     function updateVerseSelect() {
       const s = state.data.surahs.find(x => x.number === state.surah);
-      if(!s) return;
+      if (!s) return;
       let opts = '<option value="0">Ayet</option>';
-      for(let i=1; i<=s.verses.length; i++) opts += `<option value="${i}">${i}</option>`;
+      for (let i = 1; i <= s.verses.length; i++) opts += `<option value="${i}">${i}</option>`;
       nav.verse.innerHTML = opts;
     }
 
@@ -331,18 +474,18 @@
       let width = 0;
 
       track.addEventListener('touchstart', e => {
-        if(state.isNavigating) return;
+        if (state.isNavigating) return;
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
         isDragging = true;
         directionLocked = ''; // Henüz yön belli değil
         width = track.offsetWidth / 3;
         track.style.transition = 'none';
-      }, {passive: true});
+      }, { passive: true });
 
       track.addEventListener('touchmove', e => {
-        if(!isDragging || state.isNavigating) return;
-        
+        if (!isDragging || state.isNavigating) return;
+
         const currentX = e.touches[0].clientX;
         const currentY = e.touches[0].clientY;
         const diffX = currentX - startX;
@@ -354,24 +497,24 @@
             // Dikey hareket baskın -> Kaydırmayı serbest bırak (Scroll)
             directionLocked = 'vertical';
             isDragging = false; // Slider'ı sürüklemeyi bırak
-            return; 
+            return;
           } else if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 5) {
-             // Yatay hareket baskın -> Slider'ı sürükle
-             directionLocked = 'horizontal';
+            // Yatay hareket baskın -> Slider'ı sürükle
+            directionLocked = 'horizontal';
           }
         }
 
         // Eğer yatay kilitlendiyse Slider'ı hareket ettir
         if (directionLocked === 'horizontal') {
           e.preventDefault(); // Tarayıcının ileri/geri gitmesini engelle
-          const percentMove = (diffX / width) * 33.3333; 
+          const percentMove = (diffX / width) * 33.3333;
           track.style.transform = `translateX(calc(-33.3333% + ${diffX}px))`;
         }
-      }, {passive: false}); // preventDefault için passive false
+      }, { passive: false }); // preventDefault için passive false
 
       track.addEventListener('touchend', e => {
-        if(!isDragging || directionLocked !== 'horizontal') return;
-        
+        if (!isDragging || directionLocked !== 'horizontal') return;
+
         isDragging = false;
         const endX = e.changedTouches[0].clientX;
         const diff = endX - startX;
@@ -379,7 +522,7 @@
 
         track.style.transition = 'transform 0.3s ease-out';
 
-        if(diff > threshold && state.surah > 1) {
+        if (diff > threshold && state.surah > 1) {
           // Önceki Sure
           state.isNavigating = true;
           track.style.transform = 'translateX(0%)';
@@ -389,7 +532,7 @@
             slides.curr.scrollTop = 0;
             savePos(0);
           }, 300);
-        } 
+        }
         else if (diff < -threshold && state.surah < 114) {
           // Sonraki Sure
           state.isNavigating = true;
@@ -400,7 +543,7 @@
             slides.curr.scrollTop = 0;
             savePos(0);
           }, 300);
-        } 
+        }
         else {
           // Geri Dön
           track.style.transform = 'translateX(-33.3333%)';
@@ -410,11 +553,11 @@
 
     // Butonla Gezinti
     function navigate(dir) {
-      if(state.isNavigating) return;
+      if (state.isNavigating) return;
       track.style.transition = 'transform 0.3s ease-out';
       state.isNavigating = true;
-      
-      if(dir === 'next' && state.surah < 114) {
+
+      if (dir === 'next' && state.surah < 114) {
         track.style.transform = 'translateX(-66.6666%)';
         setTimeout(() => {
           state.surah++;
@@ -431,7 +574,7 @@
           savePos(0);
         }, 300);
       } else {
-          state.isNavigating = false;
+        state.isNavigating = false;
       }
     }
 
@@ -451,11 +594,11 @@
       const modal = document.getElementById('settingsModal');
       document.getElementById('openSettings').onclick = () => modal.classList.add('active');
       document.getElementById('closeSettings').onclick = () => modal.classList.remove('active');
-      modal.onclick = e => { if(e.target===modal) modal.classList.remove('active'); };
+      modal.onclick = e => { if (e.target === modal) modal.classList.remove('active'); };
 
-      document.getElementById('fontInc').onclick = () => { state.fontSize=Math.min(40, state.fontSize+2); applyFontSize(); };
-      document.getElementById('fontDec').onclick = () => { state.fontSize=Math.max(16, state.fontSize-2); applyFontSize(); };
-      
+      document.getElementById('fontInc').onclick = () => { state.fontSize = Math.min(40, state.fontSize + 2); applyFontSize(); };
+      document.getElementById('fontDec').onclick = () => { state.fontSize = Math.max(16, state.fontSize - 2); applyFontSize(); };
+
       document.getElementById('themeSelect').value = state.theme;
       document.getElementById('themeSelect').onchange = e => {
         state.theme = e.target.value; localStorage.setItem('q_theme', state.theme); applyTheme();
@@ -464,22 +607,22 @@
       const sSelect = document.getElementById('sourceSelect');
       sSelect.innerHTML = SOURCES.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
       sSelect.value = state.sourceId;
-      sSelect.onchange = e => loadData(e.target.value).then(()=>updateSlidesContent());
+      sSelect.onchange = e => loadData(e.target.value).then(() => updateSlidesContent());
 
       nav.prev.onclick = () => navigate('prev');
       nav.next.onclick = () => navigate('next');
-      
+
       nav.surah.onchange = e => {
         state.surah = parseInt(e.target.value);
         updateSlidesContent();
         slides.curr.scrollTop = 0;
         savePos(0);
       };
-      
+
       nav.verse.onchange = e => {
         const vId = `s${state.surah}-v${e.target.value}`;
         const el = document.getElementById(vId);
-        if(el) el.scrollIntoView({behavior: "smooth", block: "center"});
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       };
 
       // PWA
@@ -491,10 +634,10 @@
         installContainer.classList.remove('hidden');
       });
       installBtn.onclick = async () => {
-        if(!window.deferredPrompt) return;
+        if (!window.deferredPrompt) return;
         window.deferredPrompt.prompt();
-        const {outcome} = await window.deferredPrompt.userChoice;
-        if(outcome==='accepted') installContainer.classList.add('hidden');
+        const { outcome } = await window.deferredPrompt.userChoice;
+        if (outcome === 'accepted') installContainer.classList.add('hidden');
         window.deferredPrompt = null;
       };
     }
@@ -502,7 +645,7 @@
     function applyFontSize() {
       localStorage.setItem('q_fontSize', state.fontSize);
       let style = document.getElementById('dyn-style');
-      if(!style) { style = document.createElement('style'); style.id='dyn-style'; document.head.appendChild(style); }
+      if (!style) { style = document.createElement('style'); style.id = 'dyn-style'; document.head.appendChild(style); }
       style.innerHTML = `.verse-container { font-size: ${state.fontSize}px !important; }`;
     }
 
@@ -512,8 +655,9 @@
       meta.setAttribute("content", state.theme === 'dark' ? '#1e1e1e' : '#fdf6e3');
     }
 
-    if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
     init();
   </script>
 </body>
+
 </html>

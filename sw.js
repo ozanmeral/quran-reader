@@ -6,7 +6,8 @@ const ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   // Buraya varsayılan veriyi ekliyoruz, diğerleri talep edildikçe cache'lenecek
-  './data/quranix_yasarnuri_simple.json'
+  './data/quranix_yasarnuri_simple.json',
+  './data/quranix_mesaj_simple.json'
 ];
 
 // Install: Temel dosyaları cache'le
@@ -32,7 +33,7 @@ self.addEventListener('activate', (e) => {
 // Fetch: Network-first (JSON için), Cache-first (Static için)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  
+
   // Veri dosyaları (json) için önce ağa git, olmazsa cache'e bak, o da yoksa hata
   // Bu sayede veri güncellemeleri anında yansır.
   if (url.pathname.endsWith('.json')) {
