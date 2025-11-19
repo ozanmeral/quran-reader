@@ -181,6 +181,8 @@
       line-height: 1.6;
       font-size: 1.1rem;
       white-space: pre-wrap;
+      overflow-y: auto;
+      flex: 1;
     }
 
     /* --- ALT NAVİGASYON --- */
@@ -252,6 +254,12 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    #footnoteModal .settings-modal {
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .modal-header {
