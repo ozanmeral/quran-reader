@@ -30,13 +30,14 @@
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
-    body, html {
+    html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
-      overflow: hidden; /* Ana scroll'u kapatıyoruz, slider içten kayacak */
+      overflow: hidden; /* Ana sayfa kaymasın */
+      overscroll-behavior: none; /* Tüm esnemeleri kapat */
     }
 
     /* --- ÜST BAR --- */
@@ -55,38 +56,35 @@
     .settings-btn svg { width: 26px; height: 26px; fill: currentColor; }
     .settings-btn { background:none; border:none; color:var(--text-color); cursor:pointer; padding:10px; }
 
-    /* --- SLIDER YAPISI (Fiziksel Swipe İçin) --- */
+    /* --- SLIDER KUTUSU --- */
     #slider-container {
       position: absolute;
       top: var(--header-height);
       bottom: var(--nav-height);
       left: 0;
       width: 100%;
-      overflow: hidden; /* Taşanları gizle */
+      overflow: hidden;
     }
 
     #slider-track {
       display: flex;
-      width: 300%; /* 3 Sayfa genişliğinde */
+      width: 300%; /* 3 Vagon */
       height: 100%;
-      transform: translateX(-33.333%); /* Ortadaki div'i göster */
-      will-change: transform; /* Performans için */
+      transform: translateX(-33.3333%); /* Ortayı göster */
+      will-change: transform;
     }
 
-    /* Tekil Sayfa (Slide) */
+    /* --- TEKİL SAYFA (VAGON) --- */
     .slide {
-      width: 33.333%;
+      width: 33.3333%;
       height: 100%;
-      overflow-y: auto; /* İçerik scroll */
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 20px 16px;
       padding-bottom: 40px;
-      position: relative;
-    }
-
-    /* Geçiş Animasyonu (Sadece parmağı bıraktıktan sonra devreye girer) */
-    .animating {
-      transition: transform 0.3s ease-out;
+      
+      /* Lastik etkisini (Bounce) kapatan sihirli kod */
+      overscroll-behavior-y: none;
     }
 
     /* --- İÇERİK STİLLERİ --- */
@@ -143,7 +141,7 @@
       border: 1px solid var(--border-color); border-radius: 8px; text-align: center;
     }
 
-    /* --- MODAL (AYARLAR) --- */
+    /* --- MODAL --- */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); z-index: 50;
@@ -197,8 +195,6 @@
     </div>
   </div>
 
-  <!-- VAGON SİSTEMİ (SLIDER) -->
-  <!-- Sol: Önceki Sure | Orta: Mevcut Sure | Sağ: Sonraki Sure -->
   <div id="slider-container">
     <div id="slider-track">
       <div class="slide" id="slide-prev"></div>
@@ -217,16 +213,15 @@
   <script>
     const SOURCES = [{ id: 'yasar', name: 'Yaşar Nuri Öztürk', file: 'data/quranix_yasarnuri_simple.json' }];
     
-    // --- STATE ---
     let state = {
       data: null,
       sourceId: localStorage.getItem('q_source') || SOURCES[0].id,
       surah: 1,
       fontSize: parseInt(localStorage.getItem('q_fontSize')) || 22,
       theme: localStorage.getItem('q_theme') || 'light',
+      isNavigating: false
     };
 
-    // --- DOM ---
     const track = document.getElementById('slider-track');
     const slides = {
       prev: document.getElementById('slide-prev'),
@@ -240,31 +235,25 @@
       next: document.getElementById('nextBtn')
     };
 
-    // --- BAŞLAT ---
     async function init() {
       applyTheme();
       applyFontSize();
       setupSettings();
-      
-      // Veri Yükle
       await loadData(state.sourceId);
       
-      // Kaldığı yerden devam et
       const last = JSON.parse(localStorage.getItem('q_lastPos') || '{"surah":1, "scroll":0}');
       state.surah = last.surah;
       
       updateSlidesContent();
       
-      // Hafızadaki scroll pozisyonuna git (Sadece ilk açılışta)
-      // setTimeout çünkü DOM'un render olması gerek
+      // İlk açılışta scroll pozisyonunu ayarla
       setTimeout(() => {
         if(slides.curr) slides.curr.scrollTop = last.scroll;
-      }, 100);
+      }, 150);
 
       setupGestures();
     }
 
-    // --- VERİ YÖNETİMİ ---
     async function loadData(sid) {
       try {
         const src = SOURCES.find(s => s.id === sid);
@@ -272,7 +261,6 @@
         state.data = await res.json();
         localStorage.setItem('q_source', sid);
         
-        // Navigasyon listesini doldur
         nav.surah.innerHTML = state.data.surahs.map(s => 
           `<option value="${s.number}">${s.number}. ${s.name_tr.replace(/^\d+\.\s*/, '')}</option>`
         ).join('');
@@ -281,14 +269,12 @@
       }
     }
 
-    // --- İÇERİK OLUŞTURMA (HTML GEN) ---
     function getSurahHTML(num) {
       const s = state.data.surahs.find(x => x.number === num);
       if(!s) return "";
       
       let html = `<div class="surah-header"><span class="surah-name">${s.name_tr}</span></div>`;
       
-      // Dinamik Besmele
       if(num !== 1 && num !== 9) {
         const fatiha = state.data.surahs.find(x => x.number === 1);
         const basmala = fatiha ? fatiha.verses[0].text_tr : "Besmele...";
@@ -301,36 +287,31 @@
         </div>
       `).join('');
       
-      // Alt barın arkasında kalmaması için boşluk
       html += '<div style="height:100px"></div>'; 
       return html;
     }
 
-    // --- SLIDER MANTIĞI (VAGON SİSTEMİ) ---
     function updateSlidesContent() {
-      // Orta (Aktif)
       slides.curr.innerHTML = getSurahHTML(state.surah);
       
-      // Sol (Önceki)
       if(state.surah > 1) slides.prev.innerHTML = getSurahHTML(state.surah - 1);
-      else slides.prev.innerHTML = ""; // Başlangıçtaysak boş
+      else slides.prev.innerHTML = "";
 
-      // Sağ (Sonraki)
       if(state.surah < 114) slides.next.innerHTML = getSurahHTML(state.surah + 1);
-      else slides.next.innerHTML = ""; // Sondaysak boş
+      else slides.next.innerHTML = "";
 
-      // UI Güncelle
       nav.surah.value = state.surah;
       updateVerseSelect();
+      
       nav.prev.style.opacity = state.surah === 1 ? 0.3 : 1;
       nav.next.style.opacity = state.surah === 114 ? 0.3 : 1;
       
-      // Scroll takibi başlat (Orta panel için)
       slides.curr.onscroll = handleScroll;
       
-      // Pozisyonu sıfırla (Animasyon yokken merkezde durmalı)
+      // Reset position
       track.style.transition = 'none';
-      track.style.transform = 'translateX(-33.333%)';
+      track.style.transform = 'translateX(-33.3333%)';
+      state.isNavigating = false;
     }
 
     function updateVerseSelect() {
@@ -341,57 +322,78 @@
       nav.verse.innerHTML = opts;
     }
 
-    // --- FİZİKSEL SWIPE MANTIĞI ---
+    // --- GELİŞMİŞ SWIPE (YÖN KİLİDİ VE HASSASİYET) ---
     function setupGestures() {
       let startX = 0;
-      let currentTranslate = 0;
+      let startY = 0;
       let isDragging = false;
+      let directionLocked = ''; // 'horizontal' veya 'vertical'
       let width = 0;
 
-      // Dokunma Başladı
       track.addEventListener('touchstart', e => {
+        if(state.isNavigating) return;
         startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
         isDragging = true;
-        width = track.offsetWidth / 3; // Bir slaydın genişliği
-        track.style.transition = 'none'; // Sürüklerken animasyon olmamalı
+        directionLocked = ''; // Henüz yön belli değil
+        width = track.offsetWidth / 3;
+        track.style.transition = 'none';
       }, {passive: true});
 
-      // Sürükleme
       track.addEventListener('touchmove', e => {
-        if(!isDragging) return;
-        const currentX = e.touches[0].clientX;
-        const diff = currentX - startX;
+        if(!isDragging || state.isNavigating) return;
         
-        // -33.333% aslında genişliğin 1/3'ü kadardır.
-        // Piksel olarak hesaplayıp, %'ye çevirmek yerine transformu piksel bazlı da yapabiliriz ama % daha güvenli.
-        // Merkeze (-width) ek olarak parmak farkını (diff) ekliyoruz.
-        const percentMove = (diff / width) * 33.333; 
-        track.style.transform = `translateX(calc(-33.333% + ${diff}px))`;
-      }, {passive: true});
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = currentX - startX;
+        const diffY = currentY - startY;
 
-      // Bırakma
+        // Yön Kilitleme Mantığı
+        if (directionLocked === '') {
+          if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 5) {
+            // Dikey hareket baskın -> Kaydırmayı serbest bırak (Scroll)
+            directionLocked = 'vertical';
+            isDragging = false; // Slider'ı sürüklemeyi bırak
+            return; 
+          } else if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 5) {
+             // Yatay hareket baskın -> Slider'ı sürükle
+             directionLocked = 'horizontal';
+          }
+        }
+
+        // Eğer yatay kilitlendiyse Slider'ı hareket ettir
+        if (directionLocked === 'horizontal') {
+          e.preventDefault(); // Tarayıcının ileri/geri gitmesini engelle
+          const percentMove = (diffX / width) * 33.3333; 
+          track.style.transform = `translateX(calc(-33.3333% + ${diffX}px))`;
+        }
+      }, {passive: false}); // preventDefault için passive false
+
       track.addEventListener('touchend', e => {
+        if(!isDragging || directionLocked !== 'horizontal') return;
+        
         isDragging = false;
         const endX = e.changedTouches[0].clientX;
         const diff = endX - startX;
-        const threshold = width * 0.25; // %25 kaydırma yeterli
+        const threshold = width * 0.25; // %25 eşik
 
         track.style.transition = 'transform 0.3s ease-out';
 
         if(diff > threshold && state.surah > 1) {
-          // Sağa kaydırdı -> Önceki sure
+          // Önceki Sure
+          state.isNavigating = true;
           track.style.transform = 'translateX(0%)';
           setTimeout(() => {
             state.surah--;
-            // Yeni sayfada başa dön (Scroll)
             updateSlidesContent();
-            slides.curr.scrollTop = 0; 
+            slides.curr.scrollTop = 0;
             savePos(0);
           }, 300);
         } 
         else if (diff < -threshold && state.surah < 114) {
-          // Sola kaydırdı -> Sonraki sure
-          track.style.transform = 'translateX(-66.666%)';
+          // Sonraki Sure
+          state.isNavigating = true;
+          track.style.transform = 'translateX(-66.6666%)';
           setTimeout(() => {
             state.surah++;
             updateSlidesContent();
@@ -400,19 +402,20 @@
           }, 300);
         } 
         else {
-          // Vazgeçti veya sınırda -> Merkeze dön
-          track.style.transform = 'translateX(-33.333%)';
+          // Geri Dön
+          track.style.transform = 'translateX(-33.3333%)';
         }
       });
     }
 
-    // Butonla Gezinti (Animasyonlu)
+    // Butonla Gezinti
     function navigate(dir) {
-      const width = window.innerWidth;
+      if(state.isNavigating) return;
       track.style.transition = 'transform 0.3s ease-out';
+      state.isNavigating = true;
       
       if(dir === 'next' && state.surah < 114) {
-        track.style.transform = 'translateX(-66.666%)';
+        track.style.transform = 'translateX(-66.6666%)';
         setTimeout(() => {
           state.surah++;
           updateSlidesContent();
@@ -427,10 +430,11 @@
           slides.curr.scrollTop = 0;
           savePos(0);
         }, 300);
+      } else {
+          state.isNavigating = false;
       }
     }
 
-    // --- DİĞER FONKSİYONLAR ---
     let saveTimeout;
     function handleScroll(e) {
       clearTimeout(saveTimeout);
@@ -449,31 +453,29 @@
       document.getElementById('closeSettings').onclick = () => modal.classList.remove('active');
       modal.onclick = e => { if(e.target===modal) modal.classList.remove('active'); };
 
-      // Font
       document.getElementById('fontInc').onclick = () => { state.fontSize=Math.min(40, state.fontSize+2); applyFontSize(); };
       document.getElementById('fontDec').onclick = () => { state.fontSize=Math.max(16, state.fontSize-2); applyFontSize(); };
       
-      // Tema
       document.getElementById('themeSelect').value = state.theme;
       document.getElementById('themeSelect').onchange = e => {
         state.theme = e.target.value; localStorage.setItem('q_theme', state.theme); applyTheme();
       };
 
-      // Kaynak
       const sSelect = document.getElementById('sourceSelect');
       sSelect.innerHTML = SOURCES.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
       sSelect.value = state.sourceId;
       sSelect.onchange = e => loadData(e.target.value).then(()=>updateSlidesContent());
 
-      // Navigasyon
       nav.prev.onclick = () => navigate('prev');
       nav.next.onclick = () => navigate('next');
+      
       nav.surah.onchange = e => {
         state.surah = parseInt(e.target.value);
         updateSlidesContent();
-        slides.curr.scrollTop = 0; // Menüden seçince başa git
+        slides.curr.scrollTop = 0;
         savePos(0);
       };
+      
       nav.verse.onchange = e => {
         const vId = `s${state.surah}-v${e.target.value}`;
         const el = document.getElementById(vId);
@@ -499,7 +501,6 @@
 
     function applyFontSize() {
       localStorage.setItem('q_fontSize', state.fontSize);
-      // Dinamik stil
       let style = document.getElementById('dyn-style');
       if(!style) { style = document.createElement('style'); style.id='dyn-style'; document.head.appendChild(style); }
       style.innerHTML = `.verse-container { font-size: ${state.fontSize}px !important; }`;
