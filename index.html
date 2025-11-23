@@ -629,7 +629,7 @@
             // If we want to restore the exact modal, we need to save modal content in state.
 
             if (event.state.modalContent) {
-              document.getElementById('footnoteTitle').innerText = event.state.modalTitle;
+              // document.getElementById('footnoteTitle').innerText = event.state.modalTitle;
               document.getElementById('footnoteBody').innerHTML = event.state.modalContent;
               document.getElementById('footnoteModal').classList.add('active');
               // Re-attach listeners
@@ -854,13 +854,13 @@
       // Save current state before navigating
       const currentScroll = slides.curr.scrollTop;
       const modalContent = document.getElementById('footnoteBody').innerHTML;
-      const modalTitle = document.getElementById('footnoteTitle').innerText;
+      // const modalTitle = document.getElementById('footnoteTitle').innerText;
 
       history.replaceState({
         surah: state.surah,
         scroll: currentScroll,
         modalOpen: true,
-        modalTitle: modalTitle,
+        modalTitle: "",
         modalContent: modalContent,
         isDeep: false
       }, "", "");
