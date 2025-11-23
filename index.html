@@ -180,9 +180,18 @@
       font-family: 'Georgia', serif;
       line-height: 1.6;
       font-size: 1.1rem;
-      white-space: pre-wrap;
       overflow-y: auto;
       flex: 1;
+    }
+
+    .footnote-content p {
+      margin-bottom: 15px;
+    }
+
+    .footnote-content a {
+      color: var(--highlight);
+      text-decoration: underline;
+      cursor: pointer;
     }
 
     /* --- ALT NAVİGASYON --- */
@@ -539,20 +548,77 @@
       if (!v || !v.footnotes) return;
 
       // Dipnot metnini bul
-      // Genelde "Dipnot X" ile başlar. Bazen birleşik olabilir.
-      let content = v.footnotes.find(f => f.startsWith(`Dipnot ${fNum}`) || f.startsWith(`${fNum}.`));
+      // Yeni format: <br/><strong>Dipnot X</strong>...
+      // Eski format: Dipnot X...
+      let content = v.footnotes.find(f => {
+        // HTML taglerini temizleyip kontrol et veya direkt string içinde ara
+        return f.includes(`Dipnot ${fNum}`) || f.startsWith(`${fNum}.`);
+      });
 
       // Bulamazsa ve dipnot varsa, hepsini göster (fallback)
       if (!content && v.footnotes.length > 0) {
-        content = v.footnotes.join('\n\n');
+        content = v.footnotes.join('<hr/>');
       }
 
       if (content) {
         document.getElementById('footnoteTitle').innerText = `Dipnot ${fNum}`;
-        document.getElementById('footnoteBody').innerText = content;
+        const body = document.getElementById('footnoteBody');
+        body.innerHTML = content; // HTML olarak render et
+
+        // Linklere tıklama olayını yakala
+        const links = body.querySelectorAll('a');
+        links.forEach(link => {
+          link.onclick = (e) => {
+            e.preventDefault();
+
+            // Öncelik: data attribute'ları (eğer varsa) veya href parsing
+            let targetSurah = link.getAttribute('surah');
+            let targetVerse = link.getAttribute('ayah');
+
+            if (!targetSurah || !targetVerse) {
+              // Fallback: href parsing
+              const href = link.getAttribute('href');
+              const match = href.match(/\/(\d+)(?:#(\d+))?/);
+              if (match) {
+                targetSurah = match[1];
+                targetVerse = match[2] || 1;
+              }
+            }
+
+            if (targetSurah) {
+              targetSurah = parseInt(targetSurah);
+              targetVerse = parseInt(targetVerse);
+
+              // Modal'ı kapat
+              document.getElementById('footnoteModal').classList.remove('active');
+
+              // Navigasyon
+              if (state.surah !== targetSurah) {
+                state.surah = targetSurah;
+                updateSlidesContent();
+                // Sure değişiminden sonra scroll için bekle
+                setTimeout(() => scrollToVerse(targetVerse), 300);
+              } else {
+                scrollToVerse(targetVerse);
+              }
+            }
+          };
+        });
+
         document.getElementById('footnoteModal').classList.add('active');
       }
     };
+
+    function scrollToVerse(vNum) {
+      const vId = `s${state.surah}-v${vNum}`;
+      const el = document.getElementById(vId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Highlight effect
+        el.style.backgroundColor = "rgba(230, 126, 34, 0.1)";
+        setTimeout(() => el.style.backgroundColor = "", 2000);
+      }
+    }
 
     function updateSlidesContent() {
       slides.curr.innerHTML = getSurahHTML(state.surah);
