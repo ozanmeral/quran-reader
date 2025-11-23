@@ -1095,21 +1095,45 @@
         if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       };
 
-      // PWA
+      // PWA Install Logic
       const installContainer = document.getElementById('installContainer');
       const installBtn = document.getElementById('installBtn');
-      window.addEventListener('beforeinstallprompt', e => {
+
+      // Listen for the install prompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
+        // Stash the event so it can be triggered later.
         window.deferredPrompt = e;
+        // Update UI notify the user they can install the PWA
         installContainer.classList.remove('hidden');
+        console.log('PWA install prompt intercepted');
       });
-      installBtn.onclick = async () => {
-        if (!window.deferredPrompt) return;
-        window.deferredPrompt.prompt();
-        const { outcome } = await window.deferredPrompt.userChoice;
-        if (outcome === 'accepted') installContainer.classList.add('hidden');
+
+      installBtn.addEventListener('click', async () => {
+        const promptEvent = window.deferredPrompt;
+        if (!promptEvent) return;
+
+        // Show the install prompt
+        promptEvent.prompt();
+
+        // Wait for the user to respond to the prompt
+        const { outcome } = await promptEvent.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+
+        // We've used the prompt, and can't use it again, throw it away
         window.deferredPrompt = null;
-      };
+
+        // Hide the install button
+        installContainer.classList.add('hidden');
+      });
+
+      // Hide button if app is successfully installed
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        installContainer.classList.add('hidden');
+        window.deferredPrompt = null;
+      });
 
       // ARAMA
       const searchModal = document.getElementById('searchModal');
