@@ -325,6 +325,38 @@
       font-size: 1.2rem;
       color: var(--text-color);
     }
+
+    /* --- ARAMA SONUÇLARI --- */
+    .search-result-item {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--highlight);
+      margin-bottom: 5px;
+    }
+
+    .result-text {
+      font-family: 'Georgia', serif;
+      line-height: 1.5;
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+
+    .highlight {
+      background-color: rgba(230, 126, 34, 0.3);
+      border-radius: 3px;
+      padding: 0 2px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -332,6 +364,12 @@
 
   <header>
     <h1>Kur'an Oku</h1>
+    <button class="settings-btn" id="openSearch">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+      </svg>
+    </button>
     <button class="settings-btn" id="openSettings">
       <svg viewBox="0 0 24 24">
         <path
@@ -363,6 +401,25 @@
         <h2 id="footnoteTitle">Dipnot</h2><button class="close-btn" id="closeFootnote">&times;</button>
       </div>
       <div id="footnoteBody" class="footnote-content"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="searchModal">
+    <div class="settings-modal" style="height: 80vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h2>Arama</h2><button class="close-btn" id="closeSearch">&times;</button>
+      </div>
+      <div class="search-box" style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <input type="text" id="searchInput" placeholder="Ara..."
+          style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1rem;">
+        <button id="searchBtn"
+          style="padding: 0 20px; border-radius: 8px; background: var(--accent-color); color: #fff; border: none; font-weight: bold; cursor: pointer;">Ara</button>
+      </div>
+      <div id="searchResults" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+        <div style="text-align: center; color: var(--text-color); opacity: 0.7; margin-top: 50px;">
+          Aranacak kelimeyi yazın...
+        </div>
+      </div>
     </div>
   </div>
 
@@ -707,6 +764,137 @@
         if (outcome === 'accepted') installContainer.classList.add('hidden');
         window.deferredPrompt = null;
       };
+
+      // ARAMA
+      const searchModal = document.getElementById('searchModal');
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const searchResults = document.getElementById('searchResults');
+
+      document.getElementById('openSearch').onclick = () => {
+        searchModal.classList.add('active');
+        setTimeout(() => searchInput.focus(), 100);
+      };
+      document.getElementById('closeSearch').onclick = () => searchModal.classList.remove('active');
+      searchModal.onclick = e => { if (e.target === searchModal) searchModal.classList.remove('active'); };
+
+      const doSearch = () => {
+        const query = searchInput.value.trim();
+        if (!query) return;
+
+        searchResults.innerHTML = '<div style="text-align:center;padding:20px">Aranıyor...</div>';
+
+        // UI thread'i bloklamamak için kısa bir gecikme
+        setTimeout(() => {
+          const results = performSearch(query);
+          renderSearchResults(results, query);
+        }, 10);
+      };
+
+      searchBtn.onclick = doSearch;
+      searchInput.onkeypress = e => { if (e.key === 'Enter') doSearch(); };
+    }
+
+    function performSearch(query) {
+      if (!state.data) return [];
+
+      // Türkçe karakterleri normalize et ve küçük harfe çevir
+      const normalize = str => str.toLocaleLowerCase('tr').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const tokens = query.split(/\s+/).map(normalize).filter(t => t.length > 0);
+
+      if (tokens.length === 0) return [];
+
+      const results = [];
+
+      state.data.surahs.forEach(surah => {
+        surah.verses.forEach(verse => {
+          const text = verse.text_tr;
+          const normText = normalize(text);
+
+          // AND mantığı: Tüm tokenlar ayette geçmeli
+          const allMatch = tokens.every(token => normText.includes(token));
+
+          if (allMatch) {
+            results.push({
+              surah: surah.number,
+              surahName: surah.name_tr,
+              verse: verse.number,
+              text: text
+            });
+          }
+        });
+      });
+
+      return results;
+    }
+
+    function renderSearchResults(results, query) {
+      const container = document.getElementById('searchResults');
+      if (results.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:20px">Sonuç bulunamadı.</div>';
+        return;
+      }
+
+      const normalize = str => str.toLocaleLowerCase('tr').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const tokens = query.split(/\s+/).map(normalize).filter(t => t.length > 0);
+
+      const html = results.map(r => {
+        // Highlight işlemi
+        let highlightedText = r.text;
+        // Basit bir highlight mantığı: Orijinal metni koruyarak eşleşenleri işaretle
+        // Regex kullanarak case-insensitive replace yapmak daha karmaşık olabilir çünkü Türkçe karakter sorunu var.
+        // Bu yüzden basitçe replace yapalım ama orijinal case'i korumak zor.
+        // Alternatif: Metni tokenlara bölüp kontrol etmek.
+
+        // Daha sağlam bir highlight için:
+        // Metni kelimelere böl, her kelimeyi normalize edip tokenlarla karşılaştır.
+        // Eşleşirse <span class="highlight"> içine al.
+
+        // Not: Bu basit yaklaşım kelime köklerini veya ekleri tam tutturamayabilir ama iş görür.
+        // Regex ile dinamik pattern oluşturup replace yapmayı deneyelim.
+
+        try {
+          // Tokenları birleştirip regex oluştur (g ve i flagleri ile)
+          // Türkçe karakterler için i flag'i bazen yetersiz kalabilir, ama modern tarayıcılarda fena değil.
+          const pattern = new RegExp(`(${tokens.join('|')})`, 'gi');
+          highlightedText = highlightedText.replace(pattern, '<span class="highlight">$1</span>');
+        } catch (e) {
+          console.error("Highlight error", e);
+        }
+
+        return `
+          <div class="search-result-item" onclick="goToVerse(${r.surah}, ${r.verse})">
+            <div class="result-header">${r.surahName} ${r.surah}:${r.verse}</div>
+            <div class="result-text">${highlightedText}</div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div style="padding:10px;font-size:0.9rem;opacity:0.7">${results.length} sonuç bulundu</div>` + html;
+    }
+
+    function goToVerse(sNum, vNum) {
+      document.getElementById('searchModal').classList.remove('active');
+
+      // Eğer farklı suredeysek oraya git
+      if (state.surah !== sNum) {
+        state.surah = sNum;
+        updateSlidesContent();
+      }
+
+      // Ayete scroll et
+      // updateSlidesContent asenkron değil ama DOM update'i bekle
+      setTimeout(() => {
+        const vId = `s${sNum}-v${vNum}`;
+        const el = document.getElementById(vId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Geçici bir highlight efekti ver
+          el.style.backgroundColor = "var(--highlight)";
+          el.style.transition = "background-color 1s";
+          setTimeout(() => el.style.backgroundColor = "transparent", 1000);
+        }
+      }, 300);
     }
 
     function applyFontSize() {
