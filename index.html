@@ -378,6 +378,32 @@
       font-weight: bold;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
     /* --- FAB (Floating Action Button) --- */
     .fab-btn {
       position: fixed;
@@ -437,9 +463,22 @@
 <body>
 
   <header>
-    <h1>Kur'an Oku</h1>
-    <h1>Kur'an Oku</h1>
-    <!-- Arama butonu buradan kaldırıldı, FAB'a taşındı -->
+    <div class="header-left">
+      <!-- Back Button -->
+      <button class="header-icon hidden" id="backBtn">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
+      </button>
+      <!-- Home Button (Book Logo) -->
+      <button class="header-icon" id="homeBtn">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
+        </svg>
+      </button>
+    </div>
+
     <button class="settings-btn" id="openSettings">
       <svg viewBox="0 0 24 24">
         <path
@@ -598,6 +637,14 @@
           } else {
             document.getElementById('footnoteModal').classList.remove('active');
           }
+
+          // Toggle Back Button Visibility
+          const backBtn = document.getElementById('backBtn');
+          if (event.state.isDeep) {
+            backBtn.classList.remove('hidden');
+          } else {
+            backBtn.classList.add('hidden');
+          }
         }
       };
 
@@ -605,8 +652,26 @@
       history.replaceState({
         surah: state.surah,
         scroll: 0,
-        modalOpen: false
+        modalOpen: false,
+        isDeep: false
       }, "", "");
+
+      // Header Button Listeners
+      document.getElementById('homeBtn').onclick = () => {
+        if (state.surah !== 1) {
+          state.surah = 1;
+          updateSlidesContent();
+          scrollToVerse(1);
+          history.pushState({ surah: 1, scroll: 0, modalOpen: false, isDeep: false }, "", "");
+          document.getElementById('backBtn').classList.add('hidden');
+        } else {
+          scrollToVerse(1);
+        }
+      };
+
+      document.getElementById('backBtn').onclick = () => {
+        history.back();
+      };
     }
 
     async function loadData(sid) {
@@ -763,8 +828,12 @@
                   history.pushState({
                     surah: targetSurah,
                     scroll: 0, // Approximate
-                    modalOpen: false
+                    modalOpen: false,
+                    isDeep: true
                   }, "", "");
+
+                  // Show Back Button
+                  document.getElementById('backBtn').classList.remove('hidden');
                 };
 
                 header.appendChild(gotoBtn);
