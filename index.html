@@ -748,11 +748,37 @@
 
     function attachFootnoteListeners() {
       const body = document.getElementById('footnoteBody');
-      // Linklere tıklama olayını yakala
+
+      // 1. Re-attach listeners to existing GoTo icons (restored from history)
+      const existingGoToBtns = body.querySelectorAll('.goto-icon');
+      existingGoToBtns.forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const s = parseInt(btn.getAttribute('data-surah'));
+          const v = parseInt(btn.getAttribute('data-ayah'));
+          handleGoToClick(s, v);
+        };
+      });
+
+      // 2. Attach listeners to links
       const links = body.querySelectorAll('a');
       links.forEach(link => {
         link.onclick = (e) => {
           e.preventDefault();
+
+          // Check for existing expanded element via aria-controls
+          const controlledId = link.getAttribute('aria-controls');
+          if (controlledId) {
+            const controlledEl = document.getElementById(controlledId);
+            if (controlledEl) {
+              controlledEl.remove();
+              link.removeAttribute('aria-controls');
+              return;
+            } else {
+              // Cleanup stale attribute if element not found
+              link.removeAttribute('aria-controls');
+            }
+          }
 
           // Öncelik: data attribute'ları (eğer varsa) veya href parsing
           let targetSurah = link.getAttribute('surah');
@@ -772,11 +798,9 @@
             targetSurah = parseInt(targetSurah);
             targetVerse = parseInt(targetVerse);
 
-            // Inline expansion logic
-            // Check if next sibling is already an inline-verse
+            // Fallback check: next sibling (for legacy or mixed state)
             const nextSibling = link.nextElementSibling;
             if (nextSibling && nextSibling.classList.contains('inline-verse')) {
-              // Toggle visibility or remove
               nextSibling.remove();
               return;
             }
@@ -788,6 +812,10 @@
               if (v) {
                 const div = document.createElement('div');
                 div.className = 'inline-verse';
+                // Generate unique ID
+                const uniqueId = `inline-verse-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                div.id = uniqueId;
+                link.setAttribute('aria-controls', uniqueId);
 
                 // Create Header with GoTo Icon
                 const header = document.createElement('div');
@@ -796,44 +824,14 @@
 
                 const gotoBtn = document.createElement('div');
                 gotoBtn.className = 'goto-icon';
+                // Store data for restoration
+                gotoBtn.setAttribute('data-surah', targetSurah);
+                gotoBtn.setAttribute('data-ayah', targetVerse);
+
                 gotoBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>`; // Arrow forward
                 gotoBtn.onclick = (e) => {
                   e.stopPropagation(); // Prevent collapsing
-
-                  // Save current state before navigating
-                  const currentScroll = slides.curr.scrollTop;
-                  const modalContent = document.getElementById('footnoteBody').innerHTML;
-                  const modalTitle = document.getElementById('footnoteTitle').innerText;
-
-                  history.replaceState({
-                    surah: state.surah,
-                    scroll: currentScroll,
-                    modalOpen: true,
-                    modalTitle: modalTitle,
-                    modalContent: modalContent
-                  }, "", "");
-
-                  // Navigate
-                  document.getElementById('footnoteModal').classList.remove('active');
-
-                  if (state.surah !== targetSurah) {
-                    state.surah = targetSurah;
-                    updateSlidesContent();
-                    setTimeout(() => scrollToVerse(targetVerse), 300);
-                  } else {
-                    scrollToVerse(targetVerse);
-                  }
-
-                  // Push new state
-                  history.pushState({
-                    surah: targetSurah,
-                    scroll: 0, // Approximate
-                    modalOpen: false,
-                    isDeep: true
-                  }, "", "");
-
-                  // Show Back Button
-                  document.getElementById('backBtn').classList.remove('hidden');
+                  handleGoToClick(targetSurah, targetVerse);
                 };
 
                 header.appendChild(gotoBtn);
@@ -849,8 +847,44 @@
           }
         };
       });
+    }
 
-      document.getElementById('footnoteModal').classList.add('active');
+    function handleGoToClick(targetSurah, targetVerse) {
+      // Save current state before navigating
+      const currentScroll = slides.curr.scrollTop;
+      const modalContent = document.getElementById('footnoteBody').innerHTML;
+      const modalTitle = document.getElementById('footnoteTitle').innerText;
+
+      history.replaceState({
+        surah: state.surah,
+        scroll: currentScroll,
+        modalOpen: true,
+        modalTitle: modalTitle,
+        modalContent: modalContent,
+        isDeep: false
+      }, "", "");
+
+      // Navigate
+      document.getElementById('footnoteModal').classList.remove('active');
+
+      if (state.surah !== targetSurah) {
+        state.surah = targetSurah;
+        updateSlidesContent();
+        setTimeout(() => scrollToVerse(targetVerse), 300);
+      } else {
+        scrollToVerse(targetVerse);
+      }
+
+      // Push new state
+      history.pushState({
+        surah: targetSurah,
+        scroll: 0, // Approximate
+        modalOpen: false,
+        isDeep: true
+      }, "", "");
+
+      // Show Back Button
+      document.getElementById('backBtn').classList.remove('hidden');
     }
 
 
