@@ -182,6 +182,7 @@
       font-size: 1.1rem;
       overflow-y: auto;
       flex: 1;
+      padding-bottom: 150px;
     }
 
     .footnote-content p {
@@ -507,7 +508,7 @@
   <div class="modal-overlay" id="footnoteModal">
     <div class="settings-modal">
       <div class="modal-header">
-        <h2 id="footnoteTitle">Dipnot</h2><button class="close-btn" id="closeFootnote">&times;</button>
+        <div style="flex:1"></div><button class="close-btn" id="closeFootnote">&times;</button>
       </div>
       <div id="footnoteBody" class="footnote-content"></div>
     </div>
@@ -738,7 +739,7 @@
       }
 
       if (content) {
-        document.getElementById('footnoteTitle').innerText = `Dipnot ${fNum}`;
+        // document.getElementById('footnoteTitle').innerText = `Dipnot ${fNum}`;
         const body = document.getElementById('footnoteBody');
         body.innerHTML = content; // HTML olarak render et
         attachFootnoteListeners();
