@@ -377,6 +377,60 @@
       padding: 0 2px;
       font-weight: bold;
     }
+
+    /* --- FAB (Floating Action Button) --- */
+    .fab-btn {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 20px);
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--highlight);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 30;
+      transition: transform 0.2s;
+    }
+
+    .fab-btn:active {
+      transform: scale(0.95);
+    }
+
+    .fab-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    /* --- Inline Verse Go To Icon --- */
+    .inline-verse-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
+    }
+
+    .goto-icon {
+      cursor: pointer;
+      color: var(--highlight);
+      display: flex;
+      align-items: center;
+      padding: 5px;
+    }
+
+    .goto-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
   </style>
 </head>
 
@@ -384,12 +438,8 @@
 
   <header>
     <h1>Kur'an Oku</h1>
-    <button class="settings-btn" id="openSearch">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-      </svg>
-    </button>
+    <h1>Kur'an Oku</h1>
+    <!-- Arama butonu buradan kaldırıldı, FAB'a taşındı -->
     <button class="settings-btn" id="openSettings">
       <svg viewBox="0 0 24 24">
         <path
@@ -464,6 +514,14 @@
       </svg></button>
   </nav>
 
+  <!-- Floating Action Button for Search -->
+  <button id="fabSearch" class="fab-btn">
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+    </svg>
+  </button>
+
   <script>
     const SOURCES = [{ id: 'yasar', name: 'Yaşar Nuri Öztürk', file: 'data/quranix_yasarnuri_simple.json' }, { id: 'mesaj', name: 'Edip Yüksel - Mesaj', file: 'data/quranix_mesaj_simple.json' }];
 
@@ -506,6 +564,49 @@
       }, 150);
 
       setupGestures();
+
+      // History Handling
+      window.onpopstate = (event) => {
+        if (event.state) {
+          // Restore state
+          state.surah = event.state.surah;
+          updateSlidesContent();
+
+          // Restore scroll
+          if (event.state.scroll) {
+            setTimeout(() => {
+              if (slides.curr) slides.curr.scrollTop = event.state.scroll;
+            }, 50);
+          }
+
+          // Restore Modal if it was open
+          if (event.state.modalOpen) {
+            // Re-open modal logic could be complex depending on content
+            // For now, we assume if we pop back, we might want to close modal if it was a navigation *from* modal
+            // But if we are going BACK to a state where modal was open, we should open it.
+            // However, simpler approach: If we navigated AWAY from modal, popping back should restore context.
+            // Let's rely on the fact that we are back in the Surah.
+            // If we want to restore the exact modal, we need to save modal content in state.
+
+            if (event.state.modalContent) {
+              document.getElementById('footnoteTitle').innerText = event.state.modalTitle;
+              document.getElementById('footnoteBody').innerHTML = event.state.modalContent;
+              document.getElementById('footnoteModal').classList.add('active');
+              // Re-attach listeners
+              attachFootnoteListeners();
+            }
+          } else {
+            document.getElementById('footnoteModal').classList.remove('active');
+          }
+        }
+      };
+
+      // Initial state replace
+      history.replaceState({
+        surah: state.surah,
+        scroll: 0,
+        modalOpen: false
+      }, "", "");
     }
 
     async function loadData(sid) {
@@ -575,60 +676,114 @@
         document.getElementById('footnoteTitle').innerText = `Dipnot ${fNum}`;
         const body = document.getElementById('footnoteBody');
         body.innerHTML = content; // HTML olarak render et
-
-        // Linklere tıklama olayını yakala
-        const links = body.querySelectorAll('a');
-        links.forEach(link => {
-          link.onclick = (e) => {
-            e.preventDefault();
-
-            // Öncelik: data attribute'ları (eğer varsa) veya href parsing
-            let targetSurah = link.getAttribute('surah');
-            let targetVerse = link.getAttribute('ayah');
-
-            if (!targetSurah || !targetVerse) {
-              // Fallback: href parsing
-              const href = link.getAttribute('href');
-              const match = href.match(/\/(\d+)(?:#(\d+))?/);
-              if (match) {
-                targetSurah = match[1];
-                targetVerse = match[2] || 1;
-              }
-            }
-
-            if (targetSurah) {
-              targetSurah = parseInt(targetSurah);
-              targetVerse = parseInt(targetVerse);
-
-              // Inline expansion logic
-              // Check if next sibling is already an inline-verse
-              const nextSibling = link.nextElementSibling;
-              if (nextSibling && nextSibling.classList.contains('inline-verse')) {
-                // Toggle visibility or remove
-                nextSibling.remove();
-                return;
-              }
-
-              // Fetch verse text
-              const s = state.data.surahs.find(x => x.number === targetSurah);
-              if (s) {
-                const v = s.verses.find(x => x.number === targetVerse);
-                if (v) {
-                  const div = document.createElement('div');
-                  div.className = 'inline-verse';
-                  div.innerHTML = `<strong>${s.name_tr} ${targetSurah}:${targetVerse}</strong><br/>${v.text_tr}`;
-                  link.parentNode.insertBefore(div, link.nextSibling);
-                }
-              }
-
-
-            }
-          };
-        });
-
+        attachFootnoteListeners();
         document.getElementById('footnoteModal').classList.add('active');
       }
     };
+
+    function attachFootnoteListeners() {
+      const body = document.getElementById('footnoteBody');
+      // Linklere tıklama olayını yakala
+      const links = body.querySelectorAll('a');
+      links.forEach(link => {
+        link.onclick = (e) => {
+          e.preventDefault();
+
+          // Öncelik: data attribute'ları (eğer varsa) veya href parsing
+          let targetSurah = link.getAttribute('surah');
+          let targetVerse = link.getAttribute('ayah');
+
+          if (!targetSurah || !targetVerse) {
+            // Fallback: href parsing
+            const href = link.getAttribute('href');
+            const match = href.match(/\/(\d+)(?:#(\d+))?/);
+            if (match) {
+              targetSurah = match[1];
+              targetVerse = match[2] || 1;
+            }
+          }
+
+          if (targetSurah) {
+            targetSurah = parseInt(targetSurah);
+            targetVerse = parseInt(targetVerse);
+
+            // Inline expansion logic
+            // Check if next sibling is already an inline-verse
+            const nextSibling = link.nextElementSibling;
+            if (nextSibling && nextSibling.classList.contains('inline-verse')) {
+              // Toggle visibility or remove
+              nextSibling.remove();
+              return;
+            }
+
+            // Fetch verse text
+            const s = state.data.surahs.find(x => x.number === targetSurah);
+            if (s) {
+              const v = s.verses.find(x => x.number === targetVerse);
+              if (v) {
+                const div = document.createElement('div');
+                div.className = 'inline-verse';
+
+                // Create Header with GoTo Icon
+                const header = document.createElement('div');
+                header.className = 'inline-verse-header';
+                header.innerHTML = `<strong>${s.name_tr} ${targetSurah}:${targetVerse}</strong>`;
+
+                const gotoBtn = document.createElement('div');
+                gotoBtn.className = 'goto-icon';
+                gotoBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>`; // Arrow forward
+                gotoBtn.onclick = (e) => {
+                  e.stopPropagation(); // Prevent collapsing
+
+                  // Save current state before navigating
+                  const currentScroll = slides.curr.scrollTop;
+                  const modalContent = document.getElementById('footnoteBody').innerHTML;
+                  const modalTitle = document.getElementById('footnoteTitle').innerText;
+
+                  history.replaceState({
+                    surah: state.surah,
+                    scroll: currentScroll,
+                    modalOpen: true,
+                    modalTitle: modalTitle,
+                    modalContent: modalContent
+                  }, "", "");
+
+                  // Navigate
+                  document.getElementById('footnoteModal').classList.remove('active');
+
+                  if (state.surah !== targetSurah) {
+                    state.surah = targetSurah;
+                    updateSlidesContent();
+                    setTimeout(() => scrollToVerse(targetVerse), 300);
+                  } else {
+                    scrollToVerse(targetVerse);
+                  }
+
+                  // Push new state
+                  history.pushState({
+                    surah: targetSurah,
+                    scroll: 0, // Approximate
+                    modalOpen: false
+                  }, "", "");
+                };
+
+                header.appendChild(gotoBtn);
+                div.appendChild(header);
+
+                const text = document.createElement('div');
+                text.innerHTML = v.text_tr;
+                div.appendChild(text);
+
+                link.parentNode.insertBefore(div, link.nextSibling);
+              }
+            }
+          }
+        };
+      });
+
+      document.getElementById('footnoteModal').classList.add('active');
+    }
+
 
     function scrollToVerse(vNum) {
       const vId = `s${state.surah}-v${vNum}`;
@@ -858,7 +1013,9 @@
       const searchBtn = document.getElementById('searchBtn');
       const searchResults = document.getElementById('searchResults');
 
-      document.getElementById('openSearch').onclick = () => {
+
+
+      document.getElementById('fabSearch').onclick = () => {
         searchModal.classList.add('active');
         setTimeout(() => searchInput.focus(), 100);
       };
