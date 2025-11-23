@@ -194,6 +194,17 @@
       cursor: pointer;
     }
 
+    .inline-verse {
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 0.95rem;
+      color: var(--text-color);
+      font-style: italic;
+    }
+
     /* --- ALT NAVİGASYON --- */
     .bottom-nav {
       position: fixed;
@@ -589,18 +600,28 @@
               targetSurah = parseInt(targetSurah);
               targetVerse = parseInt(targetVerse);
 
-              // Modal'ı kapat
-              document.getElementById('footnoteModal').classList.remove('active');
-
-              // Navigasyon
-              if (state.surah !== targetSurah) {
-                state.surah = targetSurah;
-                updateSlidesContent();
-                // Sure değişiminden sonra scroll için bekle
-                setTimeout(() => scrollToVerse(targetVerse), 300);
-              } else {
-                scrollToVerse(targetVerse);
+              // Inline expansion logic
+              // Check if next sibling is already an inline-verse
+              const nextSibling = link.nextElementSibling;
+              if (nextSibling && nextSibling.classList.contains('inline-verse')) {
+                // Toggle visibility or remove
+                nextSibling.remove();
+                return;
               }
+
+              // Fetch verse text
+              const s = state.data.surahs.find(x => x.number === targetSurah);
+              if (s) {
+                const v = s.verses.find(x => x.number === targetVerse);
+                if (v) {
+                  const div = document.createElement('div');
+                  div.className = 'inline-verse';
+                  div.innerHTML = `<strong>${s.name_tr} ${targetSurah}:${targetVerse}</strong><br/>${v.text_tr}`;
+                  link.parentNode.insertBefore(div, link.nextSibling);
+                }
+              }
+
+
             }
           };
         });
